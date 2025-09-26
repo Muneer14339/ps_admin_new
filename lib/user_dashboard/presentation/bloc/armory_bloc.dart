@@ -1,7 +1,6 @@
 // lib/user_dashboard/presentation/bloc/armory_bloc.dart
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/usecases/usecase.dart';
-import '../../domain/services/armory_cache_service.dart';
 import '../../domain/usecases/add_maintenance_usecase.dart';
 import '../../domain/usecases/delete_ammunition_usecase.dart';
 import '../../domain/usecases/delete_firearm_usecase.dart';
@@ -9,33 +8,39 @@ import '../../domain/usecases/delete_gear_usecase.dart';
 import '../../domain/usecases/delete_loadout_usecase.dart';
 import '../../domain/usecases/delete_maintenance_usecase.dart';
 import '../../domain/usecases/delete_tool_usecase.dart';
+import '../../domain/usecases/get_firearms_usecase.dart';
 import '../../domain/usecases/add_firearm_usecase.dart';
-import '../../domain/usecases/add_ammunition_usecase.dart' as user_add_ammo;
+import '../../domain/usecases/get_ammunition_usecase.dart';
+import '../../domain/usecases/add_ammunition_usecase.dart';
+import '../../domain/usecases/get_gear_usecase.dart';
 import '../../domain/usecases/add_gear_usecase.dart';
+import '../../domain/usecases/get_maintenance_usecase.dart';
+import '../../domain/usecases/get_tools_usecase.dart';
 import '../../domain/usecases/add_tool_usecase.dart';
+import '../../domain/usecases/get_loadouts_usecase.dart';
 import '../../domain/usecases/add_loadout_usecase.dart';
 import '../../domain/usecases/get_dropdown_options_usecase.dart';
 import 'armory_event.dart';
 import 'armory_state.dart';
 
 class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
-  // Cached Use Cases (Business Logic + Caching)
-  final CachedGetFirearmsUseCase getFirearmsUseCase;
-  final CachedGetAmmunitionUseCase getAmmunitionUseCase;
-  final CachedGetGearUseCase getGearUseCase;
-  final CachedGetToolsUseCase getToolsUseCase;
-  final CachedGetLoadoutsUseCase getLoadoutsUseCase;
-  final CachedGetMaintenanceUseCase getMaintenanceUseCase;
+  // Original Use Cases (Exact same as before - GUI Safe)
+  final GetFirearmsUseCase getFirearmsUseCase;
+  final GetAmmunitionUseCase getAmmunitionUseCase;
+  final GetGearUseCase getGearUseCase;
+  final GetToolsUseCase getToolsUseCase;
+  final GetLoadoutsUseCase getLoadoutsUseCase;
+  final GetMaintenanceUseCase getMaintenanceUseCase;
 
-  // CRUD Use Cases
+  // CRUD Use Cases (Exact same as before)
   final AddFirearmUseCase addFirearmUseCase;
-  final user_add_ammo.AddAmmunitionUseCase addAmmunitionUseCase;
+  final AddAmmunitionUseCase addAmmunitionUseCase;
   final AddGearUseCase addGearUseCase;
   final AddToolUseCase addToolUseCase;
   final AddLoadoutUseCase addLoadoutUseCase;
   final AddMaintenanceUseCase addMaintenanceUseCase;
 
-  // Delete Use Cases
+  // Delete Use Cases (Exact same as before)
   final DeleteFirearmUseCase deleteFirearmUseCase;
   final DeleteAmmunitionUseCase deleteAmmunitionUseCase;
   final DeleteGearUseCase deleteGearUseCase;
@@ -43,7 +48,7 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
   final DeleteMaintenanceUseCase deleteMaintenanceUseCase;
   final DeleteLoadoutUseCase deleteLoadoutUseCase;
 
-  // Business Logic Use Cases
+  // Business Logic Use Cases (Same interface)
   final GetDropdownOptionsUseCase getDropdownOptionsUseCase;
 
   ArmoryBloc({
@@ -93,11 +98,11 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
     on<HideFormEvent>(_onHideForm);
   }
 
-  // =============== Load Events (Using Cached Use Cases) ===============
+  // =============== Load Events (Using Original Use Cases) ===============
   void _onLoadFirearms(LoadFirearmsEvent event, Emitter<ArmoryState> emit) async {
     emit(const ArmoryLoading());
 
-    final result = await getFirearmsUseCase.call(event.userId);
+    final result = await getFirearmsUseCase(UserIdParams(userId: event.userId));
 
     result.fold(
           (failure) => emit(ArmoryError(message: failure.toString())),
@@ -108,7 +113,7 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
   void _onLoadAmmunition(LoadAmmunitionEvent event, Emitter<ArmoryState> emit) async {
     emit(const ArmoryLoading());
 
-    final result = await getAmmunitionUseCase.call(event.userId);
+    final result = await getAmmunitionUseCase(UserIdParams(userId: event.userId));
 
     result.fold(
           (failure) => emit(ArmoryError(message: failure.toString())),
@@ -119,7 +124,7 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
   void _onLoadGear(LoadGearEvent event, Emitter<ArmoryState> emit) async {
     emit(const ArmoryLoading());
 
-    final result = await getGearUseCase.call(event.userId);
+    final result = await getGearUseCase(UserIdParams(userId: event.userId));
 
     result.fold(
           (failure) => emit(ArmoryError(message: failure.toString())),
@@ -130,7 +135,7 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
   void _onLoadTools(LoadToolsEvent event, Emitter<ArmoryState> emit) async {
     emit(const ArmoryLoading());
 
-    final result = await getToolsUseCase.call(event.userId);
+    final result = await getToolsUseCase(UserIdParams(userId: event.userId));
 
     result.fold(
           (failure) => emit(ArmoryError(message: failure.toString())),
@@ -141,7 +146,7 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
   void _onLoadLoadouts(LoadLoadoutsEvent event, Emitter<ArmoryState> emit) async {
     emit(const ArmoryLoading());
 
-    final result = await getLoadoutsUseCase.call(event.userId);
+    final result = await getLoadoutsUseCase(UserIdParams(userId: event.userId));
 
     result.fold(
           (failure) => emit(ArmoryError(message: failure.toString())),
@@ -152,7 +157,7 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
   void _onLoadMaintenance(LoadMaintenanceEvent event, Emitter<ArmoryState> emit) async {
     emit(const ArmoryLoading());
 
-    final result = await getMaintenanceUseCase.call(event.userId);
+    final result = await getMaintenanceUseCase(UserIdParams(userId: event.userId));
 
     result.fold(
           (failure) => emit(ArmoryError(message: failure.toString())),
@@ -160,7 +165,7 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
     );
   }
 
-  // =============== Add Events (With Cache Invalidation) ===============
+  // =============== Add Events (Original Implementation) ===============
   void _onAddFirearm(AddFirearmEvent event, Emitter<ArmoryState> emit) async {
     emit(const ArmoryLoadingAction());
 
@@ -171,9 +176,6 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
     result.fold(
           (failure) => emit(ArmoryError(message: failure.toString())),
           (_) {
-        // Clean Architecture: Invalidate relevant caches
-        getFirearmsUseCase.invalidateCache(event.userId);
-
         emit(const ArmoryActionSuccess(message: 'Firearm added successfully!'));
         add(LoadFirearmsEvent(userId: event.userId));
       },
@@ -190,8 +192,6 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
     result.fold(
           (failure) => emit(ArmoryError(message: failure.toString())),
           (_) {
-        getAmmunitionUseCase.invalidateCache(event.userId);
-
         emit(const ArmoryActionSuccess(message: 'Ammunition added successfully!'));
         add(LoadAmmunitionEvent(userId: event.userId));
       },
@@ -208,8 +208,6 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
     result.fold(
           (failure) => emit(ArmoryError(message: failure.toString())),
           (_) {
-        getGearUseCase.invalidateCache(event.userId);
-
         emit(const ArmoryActionSuccess(message: 'Gear added successfully!'));
         add(LoadGearEvent(userId: event.userId));
       },
@@ -226,8 +224,6 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
     result.fold(
           (failure) => emit(ArmoryError(message: failure.toString())),
           (_) {
-        getToolsUseCase.invalidateCache(event.userId);
-
         emit(const ArmoryActionSuccess(message: 'Tool added successfully!'));
         add(LoadToolsEvent(userId: event.userId));
       },
@@ -244,8 +240,6 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
     result.fold(
           (failure) => emit(ArmoryError(message: failure.toString())),
           (_) {
-        getLoadoutsUseCase.invalidateCache(event.userId);
-
         emit(const ArmoryActionSuccess(message: 'Loadout added successfully!'));
         add(LoadLoadoutsEvent(userId: event.userId));
       },
@@ -262,15 +256,13 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
     result.fold(
           (failure) => emit(ArmoryError(message: failure.toString())),
           (_) {
-        getMaintenanceUseCase.invalidateCache(event.userId);
-
         emit(const ArmoryActionSuccess(message: 'Maintenance log added successfully!'));
         add(LoadMaintenanceEvent(userId: event.userId));
       },
     );
   }
 
-  // =============== Delete Events (With Cache Invalidation) ===============
+  // =============== Delete Events (Original Implementation) ===============
   void _onDeleteFirearm(DeleteFirearmEvent event, Emitter<ArmoryState> emit) async {
     emit(const ArmoryLoadingAction());
 
@@ -281,8 +273,6 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
     result.fold(
           (failure) => emit(ArmoryError(message: failure.toString())),
           (_) {
-        getFirearmsUseCase.invalidateCache(event.userId);
-
         emit(const ArmoryActionSuccess(message: 'Firearm deleted successfully!'));
         add(LoadFirearmsEvent(userId: event.userId));
       },
@@ -299,8 +289,6 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
     result.fold(
           (failure) => emit(ArmoryError(message: failure.toString())),
           (_) {
-        getAmmunitionUseCase.invalidateCache(event.userId);
-
         emit(const ArmoryActionSuccess(message: 'Ammunition deleted successfully!'));
         add(LoadAmmunitionEvent(userId: event.userId));
       },
@@ -317,8 +305,6 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
     result.fold(
           (failure) => emit(ArmoryError(message: failure.toString())),
           (_) {
-        getGearUseCase.invalidateCache(event.userId);
-
         emit(const ArmoryActionSuccess(message: 'Gear deleted successfully!'));
         add(LoadGearEvent(userId: event.userId));
       },
@@ -335,8 +321,6 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
     result.fold(
           (failure) => emit(ArmoryError(message: failure.toString())),
           (_) {
-        getToolsUseCase.invalidateCache(event.userId);
-
         emit(const ArmoryActionSuccess(message: 'Tool deleted successfully!'));
         add(LoadToolsEvent(userId: event.userId));
       },
@@ -353,8 +337,6 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
     result.fold(
           (failure) => emit(ArmoryError(message: failure.toString())),
           (_) {
-        getMaintenanceUseCase.invalidateCache(event.userId);
-
         emit(const ArmoryActionSuccess(message: 'Maintenance deleted successfully!'));
         add(LoadMaintenanceEvent(userId: event.userId));
       },
@@ -371,8 +353,6 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
     result.fold(
           (failure) => emit(ArmoryError(message: failure.toString())),
           (_) {
-        getLoadoutsUseCase.invalidateCache(event.userId);
-
         emit(const ArmoryActionSuccess(message: 'Loadout deleted successfully!'));
         add(LoadLoadoutsEvent(userId: event.userId));
       },

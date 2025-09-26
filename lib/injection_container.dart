@@ -82,21 +82,21 @@ Future<void> init() async {
     ),
   );
 
-  // Clean Architecture ArmoryBloc - Uses Cached Business Logic
+  // Clean Architecture ArmoryBloc - Original Interface Preserved
   sl.registerFactory(
         () => ArmoryBloc(
-      getFirearmsUseCase: sl<CachedGetFirearmsUseCase>(),
+      getFirearmsUseCase: sl<user_firearms.GetFirearmsUseCase>(),
       addFirearmUseCase: sl(),
-      getAmmunitionUseCase: sl<CachedGetAmmunitionUseCase>(),
+      getAmmunitionUseCase: sl<user_ammo.GetAmmunitionUseCase>(),
       addAmmunitionUseCase: sl<user_add_ammo.AddAmmunitionUseCase>(),
-      getGearUseCase: sl<CachedGetGearUseCase>(),
+      getGearUseCase: sl(),
       addGearUseCase: sl(),
-      getToolsUseCase: sl<CachedGetToolsUseCase>(),
+      getToolsUseCase: sl(),
       addToolUseCase: sl(),
-      getLoadoutsUseCase: sl<CachedGetLoadoutsUseCase>(),
+      getLoadoutsUseCase: sl(),
       addLoadoutUseCase: sl(),
       getDropdownOptionsUseCase: sl(),
-      getMaintenanceUseCase: sl<CachedGetMaintenanceUseCase>(),
+      getMaintenanceUseCase: sl(),
       addMaintenanceUseCase: sl(),
       deleteFirearmUseCase: sl(),
       deleteAmmunitionUseCase: sl(),
@@ -145,61 +145,6 @@ Future<void> init() async {
 
   // Business Logic Use Cases (Contains Complex Logic)
   sl.registerLazySingleton(() => GetDropdownOptionsUseCase(sl<ArmoryRepository>(), sl<FirebaseAuth>()));
-
-  // =============== Cached Business Logic Use Cases ===============
-  sl.registerLazySingleton<CachedGetFirearmsUseCase>(
-        () => CachedGetFirearmsUseCase(
-      cacheService: sl<ArmoryDataCacheService>(),
-      getFirearms: (userId) => sl<user_firearms.GetFirearmsUseCase>().call(
-        UserIdParams(userId: userId),
-      ),
-    ),
-  );
-
-  sl.registerLazySingleton<CachedGetAmmunitionUseCase>(
-        () => CachedGetAmmunitionUseCase(
-      cacheService: sl<ArmoryDataCacheService>(),
-      getAmmunition: (userId) => sl<user_ammo.GetAmmunitionUseCase>().call(
-        UserIdParams(userId: userId),
-      ),
-    ),
-  );
-
-  sl.registerLazySingleton<CachedGetGearUseCase>(
-        () => CachedGetGearUseCase(
-      cacheService: sl<ArmoryDataCacheService>(),
-      getGear: (userId) => sl<GetGearUseCase>().call(
-        UserIdParams(userId: userId),
-      ),
-    ),
-  );
-
-  sl.registerLazySingleton<CachedGetToolsUseCase>(
-        () => CachedGetToolsUseCase(
-      cacheService: sl<ArmoryDataCacheService>(),
-      getTools: (userId) => sl<GetToolsUseCase>().call(
-        UserIdParams(userId: userId),
-      ),
-    ),
-  );
-
-  sl.registerLazySingleton<CachedGetLoadoutsUseCase>(
-        () => CachedGetLoadoutsUseCase(
-      cacheService: sl<ArmoryDataCacheService>(),
-      getLoadouts: (userId) => sl<GetLoadoutsUseCase>().call(
-        UserIdParams(userId: userId),
-      ),
-    ),
-  );
-
-  sl.registerLazySingleton<CachedGetMaintenanceUseCase>(
-        () => CachedGetMaintenanceUseCase(
-      cacheService: sl<ArmoryDataCacheService>(),
-      getMaintenance: (userId) => sl<GetMaintenanceUseCase>().call(
-        UserIdParams(userId: userId),
-      ),
-    ),
-  );
 
   // =============== Domain Services ===============
   sl.registerLazySingleton<ArmoryDataCacheService>(() => ArmoryDataCacheServiceImpl());
