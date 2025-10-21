@@ -50,6 +50,15 @@ class _EnhancedArmoryTabViewState extends State<EnhancedArmoryTabView> {
     TabInfo(title: 'Report', tabType: ArmoryTabType.report),
   ];
 
+  bool _shouldUseSidebarLayout(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final orientation = MediaQuery.of(context).orientation;
+
+    // Only use sidebar for landscape WITH sufficient width (tablets/desktops)
+    // Not for small landscape phones
+    return orientation == Orientation.landscape && size.width >= 700;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -158,6 +167,10 @@ class _EnhancedArmoryTabViewState extends State<EnhancedArmoryTabView> {
         },
         child: BlocBuilder<ArmoryBloc, ArmoryState>(
           builder: (context, state) {
+            // Check layout type
+            if (_shouldUseSidebarLayout(context)) {
+              return _buildSidebarLayout(state);
+            }
             switch (AppConfig.navigationStyle) {
               case NavigationStyle.grid:
                 return _buildGridLayout(state);
@@ -170,6 +183,53 @@ class _EnhancedArmoryTabViewState extends State<EnhancedArmoryTabView> {
     );
   }
 
+  // NEW: Sidebar layout for landscape/tablet
+  Widget _buildSidebarLayout(ArmoryState state) {
+    return Row(
+      children: [
+        // Left Sidebar Navigation (20% width)
+        Container(
+          width: MediaQuery.of(context).size.width * 0.20,
+          decoration: BoxDecoration(
+            color: AppColors.cardBackground,
+            border: Border(
+              right: BorderSide(
+                color: AppColors.primaryBorder,
+                width: 1,
+              ),
+            ),
+          ),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: ListNavigationWidget(
+              selectedTabIndex: _selectedTabIndex,
+              onTabChanged: _onTabChanged,
+              state: state,
+              counts: _counts,
+            ),
+          ),
+        ),
+
+        // Right Content Area (80% width)
+        Expanded(
+          child: Container(
+            decoration: AppDecorations.pageDecoration,
+            child: RefreshIndicator(
+              onRefresh: () async {
+                _loadDataForTab(_tabs[_selectedTabIndex].tabType);
+                await Future.delayed(const Duration(milliseconds: 400));
+              },
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: AppSizes.pageMargin,
+                child: _buildTabContent(_tabs[_selectedTabIndex].tabType),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 
   Widget _buildGridLayout(ArmoryState state) {
     return Column(
