@@ -1,0 +1,298 @@
+{
+  "project_info": {
+    "project_number": "922815540760",
+    "project_id": "tlcdatabase",
+    "storage_bucket": "tlcdatabase.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:922815540760:android:30bc4b538cb528e1545d6d",
+        "android_client_info": {
+          "package_name": "com.example.pa_sreens"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "922815540760-3fdo5adcnimk3kh3vs4tirs5n9pp57bi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.pa_sreens",
+            "certificate_hash": "abb57e7754e19bbe443ce797fddec49aeee4ffb1"
+          }
+        },
+        {
+          "client_id": "922815540760-o3q2qjvq0igrhl1i0i2ppql6u58sm44u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.pa_sreens",
+            "certificate_hash": "c5c61e7fa045d057a4c76a910166c9553a4e6e2b"
+          }
+        },
+        {
+          "client_id": "922815540760-bh67fghh6klck4ve4ls9pca15r711jhd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDiuIIEnWbhbpkQMWvONjasIC-LcPvl27s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "922815540760-bh67fghh6klck4ve4ls9pca15r711jhd.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "922815540760-qofgmrgv6f92q0g2v0ipumrmd0ejaofd.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.tlc.rangescan"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:922815540760:android:5ef52dec4403e79d545d6d",
+        "android_client_info": {
+          "package_name": "com.example.rt_tiltcant_accgyro"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "922815540760-bh67fghh6klck4ve4ls9pca15r711jhd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDiuIIEnWbhbpkQMWvONjasIC-LcPvl27s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "922815540760-bh67fghh6klck4ve4ls9pca15r711jhd.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "922815540760-qofgmrgv6f92q0g2v0ipumrmd0ejaofd.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.tlc.rangescan"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:922815540760:android:e0bdfa8e0ad4805a545d6d",
+        "android_client_info": {
+          "package_name": "com.tlc.PulseAim"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "922815540760-cpglp9j61f2m3umlhv9qchqife3ekqq3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tlc.PulseAim",
+            "certificate_hash": "c5c61e7fa045d057a4c76a910166c9553a4e6e2b"
+          }
+        },
+        {
+          "client_id": "922815540760-h956fp9mj2psdgp7ssc4c1oagt5ggpls.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tlc.PulseAim",
+            "certificate_hash": "abb57e7754e19bbe443ce797fddec49aeee4ffb1"
+          }
+        },
+        {
+          "client_id": "922815540760-bh67fghh6klck4ve4ls9pca15r711jhd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDiuIIEnWbhbpkQMWvONjasIC-LcPvl27s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "922815540760-bh67fghh6klck4ve4ls9pca15r711jhd.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "922815540760-qofgmrgv6f92q0g2v0ipumrmd0ejaofd.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.tlc.rangescan"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:922815540760:android:e922d786ef3cb267545d6d",
+        "android_client_info": {
+          "package_name": "com.tlc.pulseSkadi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "922815540760-e60mkmiuqnpurg3b3subo7l3g4k3a6j1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tlc.pulseSkadi",
+            "certificate_hash": "c5c61e7fa045d057a4c76a910166c9553a4e6e2b"
+          }
+        },
+        {
+          "client_id": "922815540760-bh67fghh6klck4ve4ls9pca15r711jhd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDiuIIEnWbhbpkQMWvONjasIC-LcPvl27s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "922815540760-bh67fghh6klck4ve4ls9pca15r711jhd.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "922815540760-qofgmrgv6f92q0g2v0ipumrmd0ejaofd.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.tlc.rangescan"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:922815540760:android:5b0c4018f7976e4e545d6d",
+        "android_client_info": {
+          "package_name": "com.tlc.rangescan"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "922815540760-288osajq5klrui1tetrk9d2habm75sur.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tlc.rangescan",
+            "certificate_hash": "20de2d4bff6d43e6a304bcce162d78a4497c3c29"
+          }
+        },
+        {
+          "client_id": "922815540760-560ddfaevc1of8libkjqfkjc3koremq7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tlc.rangescan",
+            "certificate_hash": "42049a5fc894d0ad049fad80d54d4ede0ff3ecf4"
+          }
+        },
+        {
+          "client_id": "922815540760-clla37bfp0ataren9jv1o8fiojkm5ier.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tlc.rangescan",
+            "certificate_hash": "abb57e7754e19bbe443ce797fddec49aeee4ffb1"
+          }
+        },
+        {
+          "client_id": "922815540760-bh67fghh6klck4ve4ls9pca15r711jhd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDiuIIEnWbhbpkQMWvONjasIC-LcPvl27s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "922815540760-bh67fghh6klck4ve4ls9pca15r711jhd.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "922815540760-qofgmrgv6f92q0g2v0ipumrmd0ejaofd.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.tlc.rangescan"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:922815540760:android:38bae98456db5aa4545d6d",
+        "android_client_info": {
+          "package_name": "com.tlc.rifleaxis"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "922815540760-ij1kdug31m8tng37ht9l2p1k50m9euh4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tlc.rifleaxis",
+            "certificate_hash": "36e8a187550761e64895dce5692b899db97740b1"
+          }
+        },
+        {
+          "client_id": "922815540760-bh67fghh6klck4ve4ls9pca15r711jhd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDiuIIEnWbhbpkQMWvONjasIC-LcPvl27s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "922815540760-bh67fghh6klck4ve4ls9pca15r711jhd.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "922815540760-qofgmrgv6f92q0g2v0ipumrmd0ejaofd.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.tlc.rangescan"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

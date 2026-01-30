@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">Flutter UVC Camera</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_setup">Set Up</string>
+    <string name="msg_flip_your_phone">Flip your phone horizontal</string>
+    <string name="title_step1">Step 1</string>
+    <string name="title_step2">Step 2</string>
+    <string name="msg_plug_usb_camera">Plug your USB camera into your mobile</string>
+    <string name="title_step3">Step 3</string>
+    <string name="msg_put_in_your_headset">Put the mobile inside your headset</string>
+    <string name="action_skip">Skip</string>
+    <string name="title_permissions">Permissions</string>
+    <string name="msg_permission">We need some permission to continue</string>
+    <string name="action_agree">Agree</string>
+    <string name="msg_permission_tips">You have already denied permission access. Go to the Settings page to turn on permissions</string>
+    <string name="msg_error">Error in playing audio</string>
+    <string name="msg_picture_error">Error when taking image</string>
+    <string name="action_share_resolutions">Share Resolutions</string>
+    <string name="title_format">Format</string>
+    <string name="video_format_resolution">Resolution</string>
+    <string name="title_frame_rate">Frame Rate</string>
+    <string name="title_camera_formats">Camera Formats</string>
+    <string name="action_ok">OK</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="video_format_format_yuv">YUV</string>
+    <string name="video_format_format_mjpeg">MJPEG</string>
+    <string name="action_show_camera_foramts">Show Camera Formats</string>
+    <string name="action_crop_center">Set Crop Size</string>
+    <string name="action_clear_crop">Clear Crop</string>
+    <string name="msg_crop_cleared">Crop cleared</string>
+</resources>

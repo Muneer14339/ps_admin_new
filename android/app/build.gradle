@@ -1,0 +1,99 @@
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "dev.flutter.flutter-gradle-plugin"
+    id "com.google.gms.google-services"
+
+}
+
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('key.properties')
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
+android {
+    namespace = "com.tlc.PulseAim"
+    compileSdk = 36
+    // ndkVersion = flutter.ndkVersion
+    ndkVersion = "27.0.12077973"
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8
+    }
+
+//    packagingOptions {
+//        pickFirst 'lib/**/libc++_shared.so'
+//    }
+
+    packagingOptions {
+        pickFirst 'lib/arm64-v8a/libc++_shared.so'
+        pickFirst 'lib/armeabi-v7a/libc++_shared.so'
+        pickFirst 'lib/x86_64/libc++_shared.so'
+        pickFirst 'lib/x86/libc++_shared.so'  // Add for x86 conflict resolution
+    }
+
+    defaultConfig {
+        applicationId "com.tlc.PulseAim"
+        minSdkVersion 24  // Ensure compatibility with devices
+        targetSdkVersion 35  // Target latest Android version
+        versionCode flutter.versionCode
+        versionName flutter.versionName
+        multiDexEnabled true  // Enable multiDex for large apps
+
+        ndk {
+            abiFilters 'armeabi-v7a', 'arm64-v8a'  // Exclude x86 architectures
+        }
+    }
+
+    signingConfigs {
+        release {
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
+            storePassword keystoreProperties['storePassword']
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+
+            minifyEnabled true  // Enable code shrinking to remove unused code
+            shrinkResources true  // Remove unused resources
+            zipAlignEnabled true  // Align APK files for better performance
+            debuggable false  // Ensure release build is not debuggable
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            ndk {
+                debugSymbolLevel 'none'  // Disable debug symbols to reduce APK size
+                abiFilters 'armeabi-v7a', 'arm64-v8a'  // Exclude x86 architectures
+
+            }
+        }
+    }
+
+    lintOptions {
+        checkReleaseBuilds false  // Avoid lint issues blocking builds
+        abortOnError false  // Do not fail build due to lint warnings
+    }
+}
+
+flutter {
+    source = "../.."
+}
+
+
+dependencies {
+    implementation 'com.android.support:multidex:1.0.3'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.0"
+
+    implementation 'com.google.android.material:material:1.12.0'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.2'
+}
+

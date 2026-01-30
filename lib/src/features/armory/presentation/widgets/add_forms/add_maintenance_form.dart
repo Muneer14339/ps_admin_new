@@ -1,0 +1,394 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../../../core/theme/theme_data/theme_data.dart';
+import '../../../domain/entities/armory_maintenance.dart';
+import '../../../domain/entities/dropdown_option.dart';
+import '../../bloc/armory_bloc.dart';
+import '../../bloc/armory_event.dart';
+import '../../bloc/armory_state.dart';
+import '../common/armory_constants.dart';
+import '../common/dialog_widgets.dart';
+
+class AddMaintenanceForm extends StatefulWidget {
+  final String userId;
+  final ArmoryMaintenance? editItem;  // ADD
+
+  const AddMaintenanceForm({super.key, required this.userId, this.editItem});  // UPDATE
+
+  @override
+  State<AddMaintenanceForm> createState() => _AddMaintenanceFormState();
+}
+
+class _AddMaintenanceFormState extends State<AddMaintenanceForm> {
+  final _formKey = GlobalKey<FormState>();
+  final _controllers = <String, TextEditingController>{};
+  String? _assetType;
+  String? _asset;
+  String? _maintenanceType;
+  DateTime _selectedDate = DateTime.now();
+
+  bool get _isEditMode => widget.editItem != null;  // ADD
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeControllers();
+    if (_isEditMode) {  // ADD
+      _populateEditData();
+    }
+  }
+
+  // ADD this method after initState
+  void _populateEditData() {
+    final maintenance = widget.editItem!;
+    _assetType = maintenance.assetType;
+    _asset = maintenance.assetId;
+    _maintenanceType = maintenance.maintenanceType;
+    _selectedDate = maintenance.date;
+    _controllers['rounds']?.text = maintenance.roundsFired?.toString() ?? '0';
+    _controllers['notes']?.text = maintenance.notes ?? '';
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {});
+    });
+  }
+
+  void _initializeControllers() {
+    final fields = ['rounds', 'notes'];
+    for (final field in fields) {
+      _controllers[field] = TextEditingController();
+    }
+    _controllers['rounds']?.text = '0';
+  }
+
+  List<DropdownOption> _getAssetOptions(ArmoryState state) {
+    List firearms = [];
+    List gear = [];
+
+    // Extract data from both states
+    if (state is ArmoryDataLoaded) {
+      firearms = state.firearms;
+      gear = state.gear;
+    } else if (state is ShowingAddForm) {
+      firearms = state.firearms;
+      gear = state.gear;
+    }
+
+    if (_assetType == 'firearm') {
+      return firearms
+          .map((firearm) => DropdownOption(
+        value: firearm.id!,
+        label: '${firearm.nickname} (${firearm.make} ${firearm.model})',
+      ))
+          .toList();
+    } else if (_assetType == 'gear') {
+      return gear
+          .map((g) => DropdownOption(
+        value: g.id!,
+        label: '${g.model} (${g.category})',
+      ))
+          .toList();
+    }
+    return [];
+  }
+
+  @override
+  void dispose() {
+    _controllers.values.forEach((controller) => controller.dispose());
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocConsumer<ArmoryBloc, ArmoryState>(
+      listener: (context, state) {
+        if (state is ArmoryActionSuccess) {
+          context.read<ArmoryBloc>().add(const HideFormEvent());
+        }
+      },
+      builder: (context, state) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if(_isEditMode)
+              DialogWidgets.buildHeader(
+                context: context,
+                title: 'Edit Maintenance',
+                onClose: () {
+                  context.read<ArmoryBloc>().add(const HideFormEvent());
+                  Navigator.pop(context);
+                },
+              ),
+            Flexible(child: _buildForm(state)),
+            BlocBuilder<ArmoryBloc, ArmoryState>(
+              builder: (context, state) {
+                return _buildActions(state);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildActions(ArmoryState state) {
+    return Container(
+      padding: const EdgeInsets.all(ArmoryConstants.dialogPadding),
+      decoration: BoxDecoration(
+        border: Border(top: BorderSide(color: AppTheme.border(context))),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          TextButton(
+            onPressed: () {
+              context.read<ArmoryBloc>().add(const HideFormEvent());
+              if(_isEditMode)
+              {
+                Navigator.pop(context);
+              }
+            },
+            child: const Text('Cancel'),
+          ),
+          const SizedBox(width: 8),
+          ElevatedButton(
+            onPressed: state is ArmoryLoadingAction ? null : _saveMaintenance,
+            child: state is ArmoryLoadingAction
+                ? SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: AppTheme.textPrimary(context),
+              ),
+            )
+                : const Text('Save Maintenance'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildForm(ArmoryState state) {
+    final assetOptions = _getAssetOptions(state); // Direct call, no conditional
+
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(ArmoryConstants.dialogPadding),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            DialogWidgets.buildResponsiveRow(context, [
+              DialogWidgets.buildDropdownField(
+                context: context,
+                label: 'Asset Type *',
+                value: _assetType,
+                options: const [
+                  DropdownOption(value: 'firearm', label: 'Firearm'),
+                  DropdownOption(value: 'gear', label: 'Gear'),
+                ],
+                onChanged: (value) {
+                  if (mounted) {
+                    setState(() {
+                      _assetType = value;
+                      _asset = null;
+                    });
+                  }
+                },
+                isRequired: true,
+                enabled: !_isEditMode,  // ADD this line
+              ),
+              // Replace the Asset dropdown with this conditional:
+
+              _isEditMode
+                  ? DialogWidgets.buildTextField(
+                context: context,
+                label: 'Asset *',
+                controller: TextEditingController(
+                  text: assetOptions.firstWhere(
+                        (o) => o.value == _asset,
+                    orElse: () => DropdownOption(value: '', label: 'Unknown Asset'),
+                  ).label,
+                ),
+                enabled: false,
+              )
+                  : DialogWidgets.buildDropdownField(
+                context: context,
+                label: 'Asset *',
+                value: _asset,
+                options: assetOptions,
+                onChanged: (value) {
+                  if (mounted) {
+                    setState(() => _asset = value);
+                  }
+                },
+                isRequired: true,
+                enabled: _assetType != null && assetOptions.isNotEmpty,
+              ),
+            ]),
+            const SizedBox(height: ArmoryConstants.fieldSpacing),
+
+            DialogWidgets.buildResponsiveRow(context, [
+              DialogWidgets.buildDropdownField(
+                context: context,
+                label: 'Maintenance Type *',
+                value: _maintenanceType,
+                options: const [
+                  DropdownOption(value: 'cleaning', label: 'Cleaning'),
+                  DropdownOption(value: 'lubrication', label: 'Lubrication'),
+                  DropdownOption(value: 'inspection', label: 'Inspection'),
+                  DropdownOption(value: 'repair', label: 'Repair'),
+                  DropdownOption(value: 'replacement', label: 'Part Replacement'),
+                ],
+                onChanged: (value) {
+                  if (mounted) {
+                    setState(() => _maintenanceType = value);
+                  }
+                },
+                isRequired: true,
+              ),
+              _buildDatePickerField(),
+            ]),
+            const SizedBox(height: ArmoryConstants.fieldSpacing),
+
+            DialogWidgets.buildTextField(
+              context: context,
+              label: 'Rounds Fired (if applicable)',
+              controller: _controllers['rounds']!,
+              keyboardType: TextInputType.number,
+              hintText: '0',
+            ),
+            const SizedBox(height: ArmoryConstants.fieldSpacing),
+
+            DialogWidgets.buildTextField(
+              context: context,
+              label: 'Notes',
+              controller: _controllers['notes']!,
+              maxLines: 3,
+              maxLength: 200,
+              hintText: 'Details of maintenance performed',
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDatePickerField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Date', style: AppTheme.labelMedium(context)),
+        const SizedBox(height: 6),
+        InkWell(
+          onTap: () async {
+            final date = await showDatePicker(
+              context: context,
+              initialDate: _selectedDate,
+              firstDate: DateTime(2020),
+              lastDate: DateTime.now().add(const Duration(days: 30)),
+              builder: (context, child) {
+                return Theme(
+                  data: Theme.of(context).copyWith(
+                    colorScheme: ColorScheme.dark(
+                      primary: AppTheme.primary(context),
+                      surface: AppTheme.surface(context),
+                    ),
+                  ),
+                  child: child!,
+                );
+              },
+            );
+            if (date != null && mounted) {
+              setState(() => _selectedDate = date);
+            }
+          },
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppTheme.surfaceVariant(context),
+              borderRadius: BorderRadius.circular(ArmoryConstants.borderRadius),
+              border: Border.all(color: AppTheme.border(context)),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
+                    style: AppTheme.bodyMedium(context),
+                  ),
+                ),
+                Icon(
+                  Icons.calendar_today,
+                  color: AppTheme.textSecondary(context),
+                  size: 16,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _saveMaintenance() {
+    if (!_formKey.currentState!.validate()) return;
+
+    if (_assetType == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Asset type is required'),
+          backgroundColor: AppTheme.error(context),
+        ),
+      );
+      return;
+    }
+
+    if (_asset == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Asset selection is required'),
+          backgroundColor: AppTheme.error(context),
+        ),
+      );
+      return;
+    }
+
+    if (_maintenanceType == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Maintenance type is required'),
+          backgroundColor: AppTheme.error(context),
+        ),
+      );
+      return;
+    }
+
+    final maintenance = ArmoryMaintenance(
+      id: _isEditMode ? widget.editItem!.id : null,  // PRESERVE ID
+      assetType: _assetType!,
+      assetId: _asset!,
+      maintenanceType: _maintenanceType!,
+      date: _selectedDate,
+      roundsFired: int.tryParse(_controllers['rounds']?.text.trim() ?? '0'),
+      notes: _controllers['notes']?.text.trim(),
+      dateAdded: _isEditMode ? widget.editItem!.dateAdded : DateTime.now(),
+    );
+
+    // ADD event check
+    if (_isEditMode) {
+      context.read<ArmoryBloc>().add(
+        AddMaintenanceEvent(userId: widget.userId, maintenance: maintenance),
+      );
+      Navigator.pop(context);
+
+    } else {
+      context.read<ArmoryBloc>().add(
+        AddMaintenanceEvent(userId: widget.userId, maintenance: maintenance),
+      );
+    }
+  }
+}

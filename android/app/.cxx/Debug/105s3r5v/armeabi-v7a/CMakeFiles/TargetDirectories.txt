@@ -1,0 +1,2 @@
+/Users/macbook/Dev/EnlivenAI/PA/android/app/.cxx/Debug/105s3r5v/armeabi-v7a/CMakeFiles/edit_cache.dir
+/Users/macbook/Dev/EnlivenAI/PA/android/app/.cxx/Debug/105s3r5v/armeabi-v7a/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,1 @@
+enum SessionPage { setup, preview, active }

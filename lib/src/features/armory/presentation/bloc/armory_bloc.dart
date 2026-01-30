@@ -1,0 +1,637 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/services/local_storage_service/local_storage_service.dart';
+import '../../../../core/services/locator/locator.dart';
+import '../../../../core/services/usecases/usecase.dart';
+import '../../domain/entities/armory_ammunition.dart';
+import '../../domain/entities/armory_firearm.dart';
+import '../../domain/entities/armory_gear.dart';
+import '../../domain/entities/armory_loadout.dart';
+import '../../domain/entities/armory_maintenance.dart';
+import '../../domain/entities/armory_tool.dart';
+import '../../domain/usecases/add_maintenance_usecase.dart';
+import '../../domain/usecases/batch_delete_ammunition_usecase.dart';
+import '../../domain/usecases/batch_delete_loadouts_usecase.dart';
+import '../../domain/usecases/delete_ammunition_usecase.dart';
+import '../../domain/usecases/delete_firearm_usecase.dart';
+import '../../domain/usecases/delete_gear_usecase.dart';
+import '../../domain/usecases/delete_loadout_usecase.dart';
+import '../../domain/usecases/delete_maintenance_usecase.dart';
+import '../../domain/usecases/delete_tool_usecase.dart';
+import '../../domain/usecases/get_firearms_usecase.dart';
+import '../../domain/usecases/add_firearm_usecase.dart';
+import '../../domain/usecases/get_ammunition_usecase.dart';
+import '../../domain/usecases/add_ammunition_usecase.dart';
+import '../../domain/usecases/get_gear_usecase.dart';
+import '../../domain/usecases/add_gear_usecase.dart';
+import '../../domain/usecases/get_maintenance_usecase.dart';
+import '../../domain/usecases/get_tools_usecase.dart';
+import '../../domain/usecases/add_tool_usecase.dart';
+import '../../domain/usecases/get_loadouts_usecase.dart';
+import '../../domain/usecases/add_loadout_usecase.dart';
+import '../../domain/usecases/sync_local_to_remote_usecase.dart';
+import '../../domain/usecases/sync_remote_to_local_usecase.dart';
+import 'armory_event.dart';
+import 'armory_state.dart';
+
+class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
+  final GetFirearmsUseCase getFirearmsUseCase;
+  final GetAmmunitionUseCase getAmmunitionUseCase;
+  final GetGearUseCase getGearUseCase;
+  final GetToolsUseCase getToolsUseCase;
+  final GetLoadoutsUseCase getLoadoutsUseCase;
+  final GetMaintenanceUseCase getMaintenanceUseCase;
+  final AddFirearmUseCase addFirearmUseCase;
+  final AddAmmunitionUseCase addAmmunitionUseCase;
+  final AddGearUseCase addGearUseCase;
+  final AddToolUseCase addToolUseCase;
+  final AddLoadoutUseCase addLoadoutUseCase;
+  final AddMaintenanceUseCase addMaintenanceUseCase;
+  final DeleteFirearmUseCase deleteFirearmUseCase;
+  final DeleteAmmunitionUseCase deleteAmmunitionUseCase;
+  final DeleteGearUseCase deleteGearUseCase;
+  final DeleteToolUseCase deleteToolUseCase;
+  final DeleteMaintenanceUseCase deleteMaintenanceUseCase;
+  final DeleteLoadoutUseCase deleteLoadoutUseCase;
+  final SyncLocalToRemoteUseCase syncLocalToRemoteUseCase;
+  final SyncRemoteToLocalUseCase syncRemoteToLocalUseCase;
+  final BatchDeleteLoadoutsUseCase batchDeleteLoadoutsUseCase;
+  final BatchDeleteAmmunitionUseCase batchDeleteAmmunitionUseCase;
+  ArmoryBloc({
+    required this.getFirearmsUseCase,
+    required this.addFirearmUseCase,
+    required this.deleteFirearmUseCase,
+    required this.getAmmunitionUseCase,
+    required this.addAmmunitionUseCase,
+    required this.deleteAmmunitionUseCase,
+    required this.getGearUseCase,
+    required this.addGearUseCase,
+    required this.deleteGearUseCase,
+    required this.getToolsUseCase,
+    required this.addToolUseCase,
+    required this.deleteToolUseCase,
+    required this.getLoadoutsUseCase,
+    required this.addLoadoutUseCase,
+    required this.deleteLoadoutUseCase,
+    required this.getMaintenanceUseCase,
+    required this.addMaintenanceUseCase,
+    required this.deleteMaintenanceUseCase,
+    required this.syncLocalToRemoteUseCase,
+    required this.syncRemoteToLocalUseCase,
+    required this.batchDeleteLoadoutsUseCase,
+    required this.batchDeleteAmmunitionUseCase,
+  }) : super(const ArmoryInitial()) {
+    on<LoadAllDataEvent>(_onLoadAllData);
+    on<AddFirearmEvent>(_onAddFirearm);
+    on<AddAmmunitionEvent>(_onAddAmmunition);
+    on<AddGearEvent>(_onAddGear);
+    on<AddToolEvent>(_onAddTool);
+    on<AddLoadoutEvent>(_onAddLoadout);
+    on<AddMaintenanceEvent>(_onAddMaintenance);
+    on<DeleteFirearmEvent>(_onDeleteFirearm);
+    on<DeleteAmmunitionEvent>(_onDeleteAmmunition);
+    on<DeleteGearEvent>(_onDeleteGear);
+    on<DeleteToolEvent>(_onDeleteTool);
+    on<DeleteMaintenanceEvent>(_onDeleteMaintenance);
+    on<DeleteLoadoutEvent>(_onDeleteLoadout);
+    on<DeleteFirearmWithDependenciesEvent>(_onDeleteFirearmWithDependencies);
+    on<DeleteAmmunitionWithDependenciesEvent>(_onDeleteAmmunitionWithDependencies);
+    on<ShowAddFormEvent>(_onShowAddForm);
+    on<HideFormEvent>(_onHideForm);
+    on<SyncLocalToRemoteEvent>(_onSyncLocalToRemote);
+    on<SyncRemoteToLocalEvent>(_onSyncRemoteToLocal);
+    on<UpdateFirearmEvent>(_onUpdateFirearm);
+    on<UpdateAmmunitionEvent>(_onUpdateAmmunition);
+    on<UpdateGearEvent>(_onUpdateGear);
+    on<UpdateToolEvent>(_onUpdateTool);
+    on<UpdateLoadoutEvent>(_onUpdateLoadout);
+    on<UpdateFirearmWithDependenciesEvent>(_onUpdateFirearmWithDependencies);
+    on<UpdateMaintenanceEvent>(_onUpdateMaintenance);
+  }
+  String userIdNew = locator<LocalStorageService>().userId!;
+
+// ADD these handlers after existing handlers
+  void _onUpdateFirearm(UpdateFirearmEvent event, Emitter<ArmoryState> emit) async {
+
+    emit(const ArmoryLoadingAction());
+    final result = await addFirearmUseCase(AddFirearmParams(userId: userIdNew, firearm: event.firearm));
+    result.fold(
+          (failure) => emit(ArmoryError(message: failure.toString())),
+          (_) async {
+        emit(const ArmoryActionSuccess(message: 'Firearm updated successfully!'));
+        add(LoadAllDataEvent(userId: userIdNew));
+      },
+    );
+  }
+
+  void _onUpdateAmmunition(UpdateAmmunitionEvent event, Emitter<ArmoryState> emit) async {
+    emit(const ArmoryLoadingAction());
+    final result = await addAmmunitionUseCase(AddAmmunitionParams(userId: userIdNew, ammunition: event.ammunition));
+    result.fold(
+          (failure) => emit(ArmoryError(message: failure.toString())),
+          (_) {
+        emit(const ArmoryActionSuccess(message: 'Ammunition updated successfully!'));
+        add(LoadAllDataEvent(userId: userIdNew));
+      },
+    );
+  }
+
+  void _onUpdateGear(UpdateGearEvent event, Emitter<ArmoryState> emit) async {
+    emit(const ArmoryLoadingAction());
+    final result = await addGearUseCase(AddGearParams(userId: userIdNew, gear: event.gear));
+    result.fold(
+          (failure) => emit(ArmoryError(message: failure.toString())),
+          (_) {
+        emit(const ArmoryActionSuccess(message: 'Gear updated successfully!'));
+        add(LoadAllDataEvent(userId: userIdNew));
+      },
+    );
+  }
+
+  void _onUpdateTool(UpdateToolEvent event, Emitter<ArmoryState> emit) async {
+    emit(const ArmoryLoadingAction());
+    final result = await addToolUseCase(AddToolParams(userId: userIdNew, tool: event.tool));
+    result.fold(
+          (failure) => emit(ArmoryError(message: failure.toString())),
+          (_) {
+        emit(const ArmoryActionSuccess(message: 'Tool updated successfully!'));
+        add(LoadAllDataEvent(userId: userIdNew));
+      },
+    );
+  }
+
+  void _onUpdateLoadout(UpdateLoadoutEvent event, Emitter<ArmoryState> emit) async {
+    emit(const ArmoryLoadingAction());
+    final result = await addLoadoutUseCase(AddLoadoutParams(userId: userIdNew, loadout: event.loadout));
+    result.fold(
+          (failure) => emit(ArmoryError(message: failure.toString())),
+          (_) {
+        emit(const ArmoryActionSuccess(message: 'Loadout updated successfully!'));
+        add(LoadAllDataEvent(userId: userIdNew));
+      },
+    );
+  }
+
+  void _onUpdateFirearmWithDependencies(UpdateFirearmWithDependenciesEvent event, Emitter<ArmoryState> emit) async {
+    emit(const ArmoryLoadingAction());
+
+    try {
+      if (event.dependentLoadoutIds.isNotEmpty) {
+        final loadoutResult = await batchDeleteLoadoutsUseCase(
+            BatchDeleteLoadoutsParams(userId: userIdNew, loadoutIds: event.dependentLoadoutIds)
+        );
+        if (loadoutResult.isLeft()) {
+          loadoutResult.fold(
+                (failure) => emit(ArmoryError(message: 'Failed to delete loadouts: $failure')),
+                (_) {},
+          );
+          return;
+        }
+      }
+
+      if (event.dependentAmmunitionIds.isNotEmpty) {
+        final ammoResult = await batchDeleteAmmunitionUseCase(
+            BatchDeleteAmmunitionParams(userId: userIdNew, ammunitionIds: event.dependentAmmunitionIds)
+        );
+        if (ammoResult.isLeft()) {
+          ammoResult.fold(
+                (failure) => emit(ArmoryError(message: 'Failed to delete ammunition: $failure')),
+                (_) {},
+          );
+          return;
+        }
+      }
+
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      final result = await addFirearmUseCase(AddFirearmParams(userId: userIdNew, firearm: event.firearm));
+      await result.fold(
+            (failure) async => emit(ArmoryError(message: failure.toString())),
+            (_) async {
+          await Future.delayed(const Duration(milliseconds: 500));
+          emit(const ArmoryActionSuccess(message: 'Firearm updated and dependencies removed!'));
+          add(LoadAllDataEvent(userId: userIdNew));
+        },
+      );
+    } catch (e) {
+      emit(ArmoryError(message: 'Update failed: $e'));
+    }
+  }
+
+  void _onUpdateMaintenance(UpdateMaintenanceEvent event, Emitter<ArmoryState> emit) async {
+    emit(const ArmoryLoadingAction());
+    final result = await addMaintenanceUseCase(
+        AddMaintenanceParams(userId: userIdNew, maintenance: event.maintenance)
+    );
+    result.fold(
+          (failure) => emit(ArmoryError(message: failure.toString())),
+          (_) {
+        emit(const ArmoryActionSuccess(message: 'Maintenance updated successfully!'));
+        add(LoadAllDataEvent(userId: userIdNew));
+      },
+    );
+  }
+
+  // lib/armory/presentation/bloc/armory_bloc.dart - REPLACE both handlers with proper error handling
+
+  void _onDeleteFirearmWithDependencies(DeleteFirearmWithDependenciesEvent event, Emitter<ArmoryState> emit) async {
+    emit(const ArmoryLoadingAction());
+
+    try {
+      // Delete loadouts with error checking
+      if (event.dependentLoadoutIds.isNotEmpty) {
+        final loadoutResult = await batchDeleteLoadoutsUseCase(
+            BatchDeleteLoadoutsParams(userId: userIdNew, loadoutIds: event.dependentLoadoutIds)
+        );
+
+        if (loadoutResult.isLeft()) {
+          loadoutResult.fold(
+                (failure) => emit(ArmoryError(message: 'Failed to delete loadouts: $failure')),
+                (_) {},
+          );
+          return;
+        }
+        print('✅ Batch deleted ${event.dependentLoadoutIds.length} loadouts');
+      }
+
+      // Delete ammunition with error checking
+      if (event.dependentAmmunitionIds.isNotEmpty) {
+        final ammoResult = await batchDeleteAmmunitionUseCase(
+            BatchDeleteAmmunitionParams(userId: userIdNew, ammunitionIds: event.dependentAmmunitionIds)
+        );
+
+        if (ammoResult.isLeft()) {
+          ammoResult.fold(
+                (failure) => emit(ArmoryError(message: 'Failed to delete ammunition: $failure')),
+                (_) {},
+          );
+          return;
+        }
+        print('✅ Batch deleted ${event.dependentAmmunitionIds.length} ammunition');
+      }
+
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      // Delete firearm
+      final result = await deleteFirearmUseCase(
+        DeleteFirearmParams(userId: userIdNew, firearm: event.firearm),
+      );
+
+      await result.fold(
+            (failure) async => emit(ArmoryError(message: failure.toString())),
+            (_) async {
+          print('✅ Firearm deleted, reloading data...');
+          await Future.delayed(const Duration(milliseconds: 500));
+          emit(const ArmoryActionSuccess(message: 'Firearm and dependencies deleted!'));
+          add(LoadAllDataEvent(userId: userIdNew));
+        },
+      );
+    } catch (e) {
+      print('❌ Exception in delete: $e');
+      emit(ArmoryError(message: 'Delete failed: $e'));
+    }
+  }
+
+  void _onDeleteAmmunitionWithDependencies(DeleteAmmunitionWithDependenciesEvent event, Emitter<ArmoryState> emit) async {
+    emit(const ArmoryLoadingAction());
+
+    try {
+      // Delete loadouts with error checking
+      if (event.dependentLoadoutIds.isNotEmpty) {
+        final loadoutResult = await batchDeleteLoadoutsUseCase(
+            BatchDeleteLoadoutsParams(userId: userIdNew, loadoutIds: event.dependentLoadoutIds)
+        );
+
+        if (loadoutResult.isLeft()) {
+          loadoutResult.fold(
+                (failure) => emit(ArmoryError(message: 'Failed to delete loadouts: $failure')),
+                (_) {},
+          );
+          return;
+        }
+        print('✅ Batch deleted ${event.dependentLoadoutIds.length} loadouts');
+      }
+
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      // Delete ammunition
+      final result = await deleteAmmunitionUseCase(
+        DeleteAmmunitionParams(userId: userIdNew, ammunition: event.ammunition),
+      );
+
+      await result.fold(
+            (failure) async => emit(ArmoryError(message: failure.toString())),
+            (_) async {
+          print('✅ Ammunition deleted, reloading data...');
+          await Future.delayed(const Duration(milliseconds: 500));
+          emit(const ArmoryActionSuccess(message: 'Ammunition and dependencies deleted!'));
+          add(LoadAllDataEvent(userId: userIdNew));
+        },
+      );
+    } catch (e) {
+      print('❌ Exception in delete: $e');
+      emit(ArmoryError(message: 'Delete failed: $e'));
+    }
+  }
+
+  void _onSyncLocalToRemote(SyncLocalToRemoteEvent event, Emitter<ArmoryState> emit) async {
+    emit(const SyncInProgress(message: 'Uploading unsynced data...'));
+
+    final result = await syncLocalToRemoteUseCase(UserIdParams(userId: userIdNew));
+
+    result.fold(
+          (failure) => emit(ArmoryError(message: failure.toString())),
+          (_) {
+        emit(const SyncCompleted(message: 'Upload completed successfully!'));
+        add(LoadAllDataEvent(userId: userIdNew));
+      },
+    );
+  }
+
+  void _onSyncRemoteToLocal(SyncRemoteToLocalEvent event, Emitter<ArmoryState> emit) async {
+    emit(const SyncInProgress(message: 'Downloading new data...'));
+
+    final result = await syncRemoteToLocalUseCase(UserIdParams(userId: userIdNew));
+
+    result.fold(
+          (failure) => emit(ArmoryError(message: failure.toString())),
+          (_) {
+        emit(const SyncCompleted(message: 'Download completed successfully!'));
+        add(LoadAllDataEvent(userId: userIdNew));
+      },
+    );
+  }
+
+  void _onLoadAllData(LoadAllDataEvent event, Emitter<ArmoryState> emit) async {
+    emit(const ArmoryLoading());
+
+    final results = await Future.wait([
+      getFirearmsUseCase(UserIdParams(userId: userIdNew)),
+      getAmmunitionUseCase(UserIdParams(userId: userIdNew)),
+      getGearUseCase(UserIdParams(userId: userIdNew)),
+      getToolsUseCase(UserIdParams(userId: userIdNew)),
+      getLoadoutsUseCase(UserIdParams(userId: userIdNew)),
+      getMaintenanceUseCase(UserIdParams(userId: userIdNew)),
+    ]);
+
+    final firearms = results[0].fold((l) => <ArmoryFirearm>[], (r) => r);
+    final ammunition = results[1].fold((l) => <ArmoryAmmunition>[], (r) => r);
+    final gear = results[2].fold((l) => <ArmoryGear>[], (r) => r);
+    final tools = results[3].fold((l) => <ArmoryTool>[], (r) => r);
+    final loadouts = results[4].fold((l) => <ArmoryLoadout>[], (r) => r);
+    final maintenance = results[5].fold((l) => <ArmoryMaintenance>[], (r) => r);
+
+    emit(ArmoryDataLoaded(
+      firearms: firearms.cast<ArmoryFirearm>(),
+      ammunition: ammunition.cast<ArmoryAmmunition>(),
+      gear: gear.cast<ArmoryGear>(),
+      tools: tools.cast<ArmoryTool>(),
+      loadouts: loadouts.cast<ArmoryLoadout>(),
+      maintenance: maintenance.cast<ArmoryMaintenance>(),
+    ));
+  }
+
+  void _onAddFirearm(AddFirearmEvent event, Emitter<ArmoryState> emit) async {
+    emit(const ArmoryLoadingAction());
+
+    final result = await addFirearmUseCase(
+      AddFirearmParams(userId: userIdNew, firearm: event.firearm),
+    );
+
+    result.fold(
+          (failure) => emit(ArmoryError(message: failure.toString())),
+          (_) async {
+        emit(const ArmoryActionSuccess(message: 'Firearm added successfully!'));
+        add(LoadAllDataEvent(userId: userIdNew));
+      },
+    );
+  }
+
+  void _onAddAmmunition(AddAmmunitionEvent event, Emitter<ArmoryState> emit) async {
+    emit(const ArmoryLoadingAction());
+
+    final result = await addAmmunitionUseCase(
+      AddAmmunitionParams(userId: userIdNew, ammunition: event.ammunition),
+    );
+
+    result.fold(
+          (failure) => emit(ArmoryError(message: failure.toString())),
+          (_) {
+        emit(const ArmoryActionSuccess(message: 'Ammunition added successfully!'));
+        add(LoadAllDataEvent(userId: userIdNew));
+      },
+    );
+  }
+
+  void _onAddGear(AddGearEvent event, Emitter<ArmoryState> emit) async {
+    emit(const ArmoryLoadingAction());
+
+    final result = await addGearUseCase(
+      AddGearParams(userId: userIdNew, gear: event.gear),
+    );
+
+    result.fold(
+          (failure) => emit(ArmoryError(message: failure.toString())),
+          (_) {
+        emit(const ArmoryActionSuccess(message: 'Gear added successfully!'));
+        add(LoadAllDataEvent(userId: userIdNew));
+      },
+    );
+  }
+
+  void _onAddTool(AddToolEvent event, Emitter<ArmoryState> emit) async {
+    emit(const ArmoryLoadingAction());
+
+    final result = await addToolUseCase(
+      AddToolParams(userId: userIdNew, tool: event.tool),
+    );
+
+    result.fold(
+          (failure) => emit(ArmoryError(message: failure.toString())),
+          (_) {
+        emit(const ArmoryActionSuccess(message: 'Tool added successfully!'));
+        add(LoadAllDataEvent(userId: userIdNew));
+      },
+    );
+  }
+
+  void _onAddLoadout(AddLoadoutEvent event, Emitter<ArmoryState> emit) async {
+    emit(const ArmoryLoadingAction());
+
+    final result = await addLoadoutUseCase(
+      AddLoadoutParams(userId: userIdNew, loadout: event.loadout),
+    );
+
+    result.fold(
+          (failure) => emit(ArmoryError(message: failure.toString())),
+          (_) {
+        emit(const ArmoryActionSuccess(message: 'Loadout added successfully!'));
+        add(LoadAllDataEvent(userId: userIdNew));
+      },
+    );
+  }
+
+  void _onAddMaintenance(AddMaintenanceEvent event, Emitter<ArmoryState> emit) async {
+    emit(const ArmoryLoadingAction());
+
+    final result = await addMaintenanceUseCase(
+      AddMaintenanceParams(userId: userIdNew, maintenance: event.maintenance),
+    );
+
+    result.fold(
+          (failure) => emit(ArmoryError(message: failure.toString())),
+          (_) {
+        emit(const ArmoryActionSuccess(message: 'Maintenance log added successfully!'));
+        add(LoadAllDataEvent(userId: userIdNew));
+      },
+    );
+  }
+
+  void _onDeleteFirearm(DeleteFirearmEvent event, Emitter<ArmoryState> emit) async {
+    emit(const ArmoryLoadingAction());
+
+    final result = await deleteFirearmUseCase(
+      DeleteFirearmParams(userId: userIdNew, firearm: event.firearm),
+    );
+
+    result.fold(
+          (failure) => emit(ArmoryError(message: failure.toString())),
+          (_) {
+        emit(const ArmoryActionSuccess(message: 'Firearm deleted successfully!'));
+        add(LoadAllDataEvent(userId: userIdNew));
+      },
+    );
+  }
+
+  void _onDeleteAmmunition(DeleteAmmunitionEvent event, Emitter<ArmoryState> emit) async {
+    emit(const ArmoryLoadingAction());
+
+    final result = await deleteAmmunitionUseCase(
+      DeleteAmmunitionParams(userId: userIdNew, ammunition: event.ammunition),
+    );
+
+    result.fold(
+          (failure) => emit(ArmoryError(message: failure.toString())),
+          (_) {
+        emit(const ArmoryActionSuccess(message: 'Ammunition deleted successfully!'));
+        add(LoadAllDataEvent(userId: userIdNew));
+      },
+    );
+  }
+
+  void _onDeleteGear(DeleteGearEvent event, Emitter<ArmoryState> emit) async {
+    emit(const ArmoryLoadingAction());
+
+    final result = await deleteGearUseCase(
+      DeleteGearParams(userId: userIdNew, gear: event.gear),
+    );
+
+    result.fold(
+          (failure) => emit(ArmoryError(message: failure.toString())),
+          (_) {
+        emit(const ArmoryActionSuccess(message: 'Gear deleted successfully!'));
+        add(LoadAllDataEvent(userId: userIdNew));
+      },
+    );
+  }
+
+  void _onDeleteTool(DeleteToolEvent event, Emitter<ArmoryState> emit) async {
+    emit(const ArmoryLoadingAction());
+
+    final result = await deleteToolUseCase(
+      DeleteToolParams(userId: userIdNew, tool: event.tool),
+    );
+
+    result.fold(
+          (failure) => emit(ArmoryError(message: failure.toString())),
+          (_) {
+        emit(const ArmoryActionSuccess(message: 'Tool deleted successfully!'));
+        add(LoadAllDataEvent(userId: userIdNew));
+      },
+    );
+  }
+
+  void _onDeleteMaintenance(DeleteMaintenanceEvent event, Emitter<ArmoryState> emit) async {
+    emit(const ArmoryLoadingAction());
+
+    final result = await deleteMaintenanceUseCase(
+      DeleteMaintenanceParams(userId: userIdNew, maintenance: event.maintenance),
+    );
+
+    result.fold(
+          (failure) => emit(ArmoryError(message: failure.toString())),
+          (_) {
+        emit(const ArmoryActionSuccess(message: 'Maintenance deleted successfully!'));
+        add(LoadAllDataEvent(userId: userIdNew));
+      },
+    );
+  }
+
+  void _onDeleteLoadout(DeleteLoadoutEvent event, Emitter<ArmoryState> emit) async {
+    emit(const ArmoryLoadingAction());
+
+    final result = await deleteLoadoutUseCase(
+      DeleteLoadoutParams(userId: userIdNew, loadout: event.loadout),
+    );
+
+    result.fold(
+          (failure) => emit(ArmoryError(message: failure.toString())),
+          (_) {
+        emit(const ArmoryActionSuccess(message: 'Loadout deleted successfully!'));
+        add(LoadAllDataEvent(userId: userIdNew));
+      },
+    );
+  }
+
+
+
+  // Replace entire _onShowAddForm method (~line 125)
+  void _onShowAddForm(ShowAddFormEvent event, Emitter<ArmoryState> emit) {
+    final current = state;
+
+    // Extract data from current state
+    final data = current is ArmoryDataLoaded
+        ? current
+        : current is ShowingAddForm
+        ? ArmoryDataLoaded(
+      firearms: current.firearms.cast<ArmoryFirearm>(),
+      ammunition: current.ammunition.cast<ArmoryAmmunition>(),
+      gear: current.gear.cast<ArmoryGear>(),
+      tools: current.tools.cast<ArmoryTool>(),
+      loadouts: current.loadouts.cast<ArmoryLoadout>(),
+      maintenance: current.maintenance.cast<ArmoryMaintenance>(),
+    )
+        : null;
+
+    if (data != null) {
+      emit(ShowingAddForm(
+        tabType: event.tabType,
+        firearms: data.firearms,
+        ammunition: data.ammunition,
+        gear: data.gear,
+        tools: data.tools,
+        loadouts: data.loadouts,
+        maintenance: data.maintenance,
+      ));
+    }
+  }
+
+// Replace entire _onHideForm method (~line 155)
+  void _onHideForm(HideFormEvent event, Emitter<ArmoryState> emit) {
+    final current = state;
+
+    if (current is ShowingAddForm) {
+      emit(ArmoryDataLoaded(
+        firearms: current.firearms.cast<ArmoryFirearm>(),
+        ammunition: current.ammunition.cast<ArmoryAmmunition>(),
+        gear: current.gear.cast<ArmoryGear>(),
+        tools: current.tools.cast<ArmoryTool>(),
+        loadouts: current.loadouts.cast<ArmoryLoadout>(),
+        maintenance: current.maintenance.cast<ArmoryMaintenance>(),
+      ));
+    } else if (current is ArmoryDataLoaded) {
+      emit(current); // Re-emit same state
+    }
+  }
+
+
+}

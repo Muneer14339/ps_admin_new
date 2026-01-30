@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_share_json"
+        android:title="@string/action_share_resolutions"
+        android:icon="@drawable/ic_share"
+        app:showAsAction="ifRoom"
+        android:visible="false"/>
+
+
+    <item
+        android:id="@+id/action_camera_formats"
+        android:title="@string/action_show_camera_foramts"
+        android:icon="@drawable/ic_aspect_ratio"
+        app:showAsAction="ifRoom" />
+
+
+    <item
+        android:id="@+id/action_crop_size"
+        android:title="@string/action_crop_center"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_clear_crop"
+        android:title="@string/action_clear_crop"
+        android:showAsAction="never" />
+</menu>

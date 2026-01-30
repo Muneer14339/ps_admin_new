@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<font-family xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <font
+        app:font="@font/oswald_extra_light"
+        app:fontStyle="normal"
+        app:fontWeight="200" />
+    <font
+        app:font="@font/oswald_light"
+        app:fontStyle="normal"
+        app:fontWeight="300" />
+
+    <font
+        app:font="@font/oswald_regular"
+        app:fontStyle="normal"
+        app:fontWeight="400" />
+
+    <font
+        app:font="@font/oswald_medium"
+        app:fontStyle="normal"
+        app:fontWeight="500" />
+    <font
+        app:font="@font/oswald_semi_bold"
+        app:fontStyle="normal"
+        app:fontWeight="600" />
+
+
+    <font
+        app:font="@font/oswald_bold"
+        app:fontStyle="normal"
+        app:fontWeight="700" />
+
+</font-family>
+
+
+    <!--
+     100 – Thin.
+    200 – Extra Light (Ultra Light)
+    300 – Light.
+    400 – Normal.
+    500 – Medium.
+    600 – Semi Bold (Demi Bold)
+    700 – Bold.
+    800 – Extra Bold (Ultra Bold)
+     -->

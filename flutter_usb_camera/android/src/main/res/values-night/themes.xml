@@ -1,0 +1,24 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.VrUsbCameraCardboard" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your dark theme here. -->
+        <item name="colorPrimary">@color/my_dark_primary</item>
+        <item name="colorPrimaryVariant">@color/dark_color_primary_variant</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <!-- Remove Left space in landscape mode -->
+        <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="o_mr1">shortEdges
+        </item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
+
+
+
+
+
+
+
+
+</resources>

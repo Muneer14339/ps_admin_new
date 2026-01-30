@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- This block allows cleartext for local addresses only -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">93.127.217.36</domain>
+
+        <domain includeSubdomains="false">127.0.0.1</domain>
+        <domain includeSubdomains="false">localhost</domain>
+    </domain-config>
+
+    <!-- (Optional) Deny cleartext by default for all other domains -->
+    <base-config cleartextTrafficPermitted="false" />
+</network-security-config>
