@@ -28,7 +28,6 @@ TrainingBloc blocTrMobile = locator<TrainingBloc>();
 
 class TrainingLayoutViewMobile extends StatefulWidget {
   static const routeName = '/training-layout-mobile';
-  static final ValueNotifier<bool> isOnHomeScreen = ValueNotifier(true);
   const TrainingLayoutViewMobile({super.key});
 
   @override
@@ -98,7 +97,6 @@ class _TrainingLayoutViewMobileState extends State<TrainingLayoutViewMobile> {
                     onGenerateRoute: (settings) {
                       print("Names*************");
                       print(settings.name);
-                      TrainingLayoutViewMobile.isOnHomeScreen.value = settings.name == '/';
                       if (settings.name == '/') {
                         return MaterialPageRoute(
                           builder: (_) => BlocBuilder<AppBleDeviceBloc, AppBleDeviceState>(

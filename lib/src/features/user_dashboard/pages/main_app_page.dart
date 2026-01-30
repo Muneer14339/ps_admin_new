@@ -53,7 +53,6 @@ class _MainAppViewState extends State<MainAppView> {
   void initState() {
     super.initState();
     userId = locator<LocalStorageService>().userId!;
-
     Future.delayed(Duration.zero, () {
       if (mounted) {
         showSetupRequiredDialog(context);
