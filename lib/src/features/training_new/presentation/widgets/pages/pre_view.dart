@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pa_sreens/src/core/widgets/custom_textfield.dart';
+import '../../../../../core/app config/device_config.dart';
 import '../../../../../core/enum/session_enum.dart';
 import '../../../../../core/routes/app_pages.dart';
 import '../../../../../core/routes/app_routes.dart';
@@ -29,6 +30,7 @@ import '../../../../train/train_view.dart';
 import '../../bloc/training_bloc.dart';
 import '../../bloc/training_event.dart';
 import '../../bloc/training_state.dart';
+import '../components/choose_wifi_ble.dart';
 import '../components/loadout_list.dart';
 import '../components/range_dialog.dart';
 
@@ -81,7 +83,9 @@ class _SessionPreviewContent extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 8),
+            if (DeviceConfig.isMobile(context))
+              BackButtonWithTitle(title: 'Preview & Configure'),
+            const SizedBox(height: 10),
             Text(
               "Review your setup and adjust details before starting your session.",
               style: TextStyle(

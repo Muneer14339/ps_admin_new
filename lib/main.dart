@@ -34,6 +34,7 @@ import 'package:pa_sreens/src/features/profile/presentation/blocs/profile_remote
 import 'package:pa_sreens/src/features/training_new/presentation/bloc/training_bloc.dart';
 import 'package:pa_sreens/src/features/user_dashboard/pages/main_app_page.dart';
 import 'package:pa_sreens/src/features/user_dashboard/pages/placeholder_tabs.dart';
+import 'src/core/app config/device_config.dart';
 import 'src/core/services/locator/locator.dart';
 import 'src/core/services/session_sync_service.dart';
 import 'src/core/utils/utils.dart';
@@ -75,9 +76,6 @@ void main() async {
   await DbFileLoadingService().openDatabaseFromAssets();
 
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
-  await SystemChrome.setPreferredOrientations(
-      [DeviceOrientation.landscapeRight, DeviceOrientation.landscapeLeft])
-      .then((_) {
     runApp(MultiBlocProvider(providers: [
       BlocProvider(create: (context) => locator<StageBloc>()),
       BlocProvider(create: (context) => locator<AuthBloc>()),
@@ -95,7 +93,7 @@ void main() async {
       BlocProvider<ArmoryBloc>(create: (_) => locator<ArmoryBloc>()),
       BlocProvider<DropdownBloc>(create: (_) => locator<DropdownBloc>()),
     ], child: const MainApp()));
-  });
+
 
 }
 
@@ -105,25 +103,28 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
-print(screenSize.width);
-print(screenSize.height);
     double width = screenSize.width;
     double height = screenSize.height;
 
     return ScreenUtilInit(
-      designSize: Size(width, height
-      //   MediaQuery.of(context).orientation == Orientation.portrait
-      //       ?
-      // screenSize.width
-      //       : screenSize.height,
-      //   MediaQuery.of(context).orientation == Orientation.portrait
-      //       ?
-      // screenSize.height
-      //       : screenSize.width,
-      ),
+      designSize: Size(width, height),
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
+        final isMobile = DeviceConfig.isMobile(context);
+
+        if (isMobile) {
+          SystemChrome.setPreferredOrientations([
+            DeviceOrientation.portraitUp,
+            DeviceOrientation.portraitDown,
+          ]);
+        } else {
+          SystemChrome.setPreferredOrientations([
+            DeviceOrientation.landscapeRight,
+            DeviceOrientation.landscapeLeft,
+          ]);
+        }
+
         return BlocProvider(
           create: (context) => AppThemeBloc(),
           child: BlocBuilder<AppThemeBloc, AppThemeState>(
@@ -136,26 +137,18 @@ print(screenSize.height);
                 child: MaterialApp(
                   debugShowCheckedModeBanner: false,
                   initialRoute: '/',
-
-                  // locale: DevicePreview.locale(context),
                   builder: (context, child) {
-                    // child = DevicePreview.appBuilder(context, child);
                     child = botToastBuilder(context, child);
                     return child;
                   },
-                  // navigatorKey:  GlobalKey(),
                   theme: AppTheme.lightTheme(),
-                  // theme: state.currentTheme,
                   navigatorObservers: [BotToastNavigatorObserver()],
                   routes: {
                     '/stage': (context) => const StageView(),
-                    // '/signIN': (context) => const SigninView()
                   },
                   home: const AuthWrapper(),
-                  // home: const SplashScreen(),
                 ),
               );
-              // home: const MainScreen());
             },
           ),
         );

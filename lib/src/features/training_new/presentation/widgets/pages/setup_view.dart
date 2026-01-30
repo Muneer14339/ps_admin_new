@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../../../../core/app config/device_config.dart';
 import '../../../../../core/enum/session_enum.dart';
 import '../../../../../core/routes/app_pages.dart';
 import '../../../../../core/routes/app_routes.dart';
@@ -20,6 +21,7 @@ import '../../../../train/stage/presentation/stage_bloc/stage_bloc.dart';
 import '../../bloc/training_bloc.dart';
 import '../../bloc/training_event.dart';
 import '../../bloc/training_state.dart';
+import '../components/choose_wifi_ble.dart';
 
 class SessionSetupView extends StatefulWidget {
   static const routeName = '/session-setup';
@@ -148,6 +150,8 @@ class _SessionSetupContentState extends State<_SessionSetupContent> {
                       shrinkWrap: true,
                       padding: EdgeInsets.all(20),
                       children: [
+                        if (DeviceConfig.isMobile(context))
+                          BackButtonWithTitle(title: 'Session Setup'),
                         SizedBox(height: 10,),
                         _setupCard(_SetupItem(
                           icon: Icons.language_outlined,
