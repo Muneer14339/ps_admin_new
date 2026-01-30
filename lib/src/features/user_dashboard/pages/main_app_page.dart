@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../core/app config/app_config.dart';
+import '../../../core/app config/device_config.dart';
 import '../../../core/services/local_storage_service/local_storage_service.dart';
 import '../../../core/services/locator/locator.dart';
 import '../../../core/theme/theme_data/theme_data.dart';
@@ -154,30 +155,29 @@ class _MainAppViewState extends State<MainAppView> {
           top: false,
           child: _buildBottomNavigation(),
         ),
+        appBar: DeviceConfig.isMobile(context) && _currentIndex != 2 ? _buildAppBar() : null,
+
       ),
     );
   }
 
   PreferredSizeWidget _buildAppBar() {
+    final titles = ['Home', 'Armory', 'Training', 'History', 'Profile'];
+
     return AppBar(
-      backgroundColor: AppTheme.primary(context),
+      backgroundColor: AppTheme.background(context),
       elevation: 0,
+      automaticallyImplyLeading: false,
+      centerTitle: false,
+      toolbarHeight: 60.h,
       title: Text(
-        AppConfig.appName,
-        style: AppTheme.headingMedium(context),
-      ),
-      actions: [
-        IconButton(
-          icon: Icon(
-            Icons.logout,
-            color: AppTheme.textPrimary(context),
-            size: AppTheme.iconMedium,
-          ),
-          onPressed: () {
-            // context.read<AuthBloc>().add(const LogoutRequested());
-          },
+        titles[_currentIndex],
+        style: TextStyle(
+          color: AppTheme.primary(context),
+          fontSize: 18.sp,
+          fontWeight: FontWeight.bold,
         ),
-      ],
+      ),
     );
   }
 

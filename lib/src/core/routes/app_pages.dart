@@ -11,6 +11,8 @@ import '../../features/training_new/presentation/widgets/pages/active_view.dart'
 import '../../features/training_new/presentation/widgets/pages/pre_view.dart';
 import '../../features/training_new/presentation/widgets/pages/setup_view.dart';
 import '../../features/training_new/presentation/widgets/view/training_layout_view.dart';
+import '../../features/training_new/presentation/widgets/view/training_layout_view_mobile.dart';
+import '../../features/training_new/presentation/widgets/view/training_layout_wrapper.dart';
 import 'app_routes.dart';
 
 class AppPages {
@@ -25,6 +27,8 @@ class AppPages {
     AppRoutes.loadoutList: (_) => const LoadoutList(),
     AppRoutes.drillList: (_) => const DrillList(),
     AppRoutes.userAlert: (_) => const UserAlert(),
+    AppRoutes.trainingLayoutMobile: (_) => const TrainingLayoutViewMobile(),
+    AppRoutes.trainingWrapper: (_) => const TrainingLayoutWrapper(),
   };
 
 
@@ -40,8 +44,6 @@ class AppPages {
 
   /// The route generator function for MaterialApp
   static Route<dynamic>? onGenerateRoute(RouteSettings settings) {
-    print("ROute Name :*************************");
-    print(settings.name);
     switch (settings.name) {
       case AppRoutes.trainingLayout:
         return _noTransitionRoute(const TrainingLayoutView(), settings);
@@ -73,9 +75,13 @@ class AppPages {
       case AppRoutes.userAlert:
         return _noTransitionRoute(const UserAlert(), settings);
 
+      case AppRoutes.trainingLayoutMobile:
+        return _noTransitionRoute(const TrainingLayoutViewMobile(), settings);
+
+      case AppRoutes.trainingWrapper:
+        return _noTransitionRoute(const TrainingLayoutWrapper(), settings);
+
       default:
-        print("ROute Name :*************************");
-        print(settings.name);
         return MaterialPageRoute(
           builder: (_) => const Scaffold(
             body: Center(child: Text('404 - Page Not Found')),

@@ -28,7 +28,7 @@ TrainingBloc blocTrMobile = locator<TrainingBloc>();
 
 class TrainingLayoutViewMobile extends StatefulWidget {
   static const routeName = '/training-layout-mobile';
-
+  static final ValueNotifier<bool> isOnHomeScreen = ValueNotifier(true);
   const TrainingLayoutViewMobile({super.key});
 
   @override
@@ -36,6 +36,7 @@ class TrainingLayoutViewMobile extends StatefulWidget {
 }
 
 class _TrainingLayoutViewMobileState extends State<TrainingLayoutViewMobile> {
+
   @override
   void initState() {
     super.initState();
@@ -72,16 +73,7 @@ class _TrainingLayoutViewMobileState extends State<TrainingLayoutViewMobile> {
   }
 
   void _navigateToSection(String title, String route, SessionPage page) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => _TrainingDetailPage(
-          title: title,
-          route: route,
-          page: page,
-        ),
-      ),
-    );
+    Navigator.pushNamed(context, route);
   }
 
   @override
@@ -101,39 +93,59 @@ class _TrainingLayoutViewMobileState extends State<TrainingLayoutViewMobile> {
 
                 return Scaffold(
                   backgroundColor: AppTheme.background(context),
-                  body: SafeArea(
-                    child: Padding(
-                      padding: AppTheme.paddingLarge,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          SizedBox(height: 20.h),
-                          _buildSectionButton(
-                            title: 'Session Setup',
-                            icon: Icons.settings,
-                            isEnabled: true,
-                            onTap: () => _navigateToSection(
-                              'Session Setup',
-                              AppRoutes.setupView,
-                              SessionPage.setup,
-                            ),
+                  body: Navigator(
+                    key: locator<RoutesService>().navigatorKey,
+                    onGenerateRoute: (settings) {
+                      print("Names*************");
+                      print(settings.name);
+                      TrainingLayoutViewMobile.isOnHomeScreen.value = settings.name == '/';
+                      if (settings.name == '/') {
+                        return MaterialPageRoute(
+                          builder: (_) => BlocBuilder<AppBleDeviceBloc, AppBleDeviceState>(
+                            bloc: appBleDeviceBloc,
+                            builder: (ctx, bleState) {
+                              return BlocBuilder<CameraWifiBloc, CameraWifiState>(
+                                bloc: cameraWiBloc,
+                                builder: (ctx, wifiState) {
+                                  final isConnected = ((cameraWiBloc.lastConnectedSsid != null &&
+                                      cameraWiBloc.lastConnectedSsid != '') ||
+                                      (cameraWiBloc.withWire != null && cameraWiBloc.withWire == true)) &&
+                                      appBleDeviceBloc.deviceConn?.remoteId != null;
+
+                                  return SafeArea(
+                                    child: Padding(
+                                      padding: AppTheme.paddingLarge,
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                                        children: [
+                                          SizedBox(height: 20.h),
+                                          _buildSectionButton(
+                                            title: 'Session Setup',
+                                            icon: Icons.settings,
+                                            isEnabled: true,
+                                            onTap: () => locator<RoutesService>().navigateTo(AppRoutes.setupView),
+                                          ),
+                                          SizedBox(height: 16.h),
+                                          _buildSectionButton(
+                                            title: 'Preview & Configure',
+                                            icon: Icons.list_alt,
+                                            isEnabled: isConnected,
+                                            onTap: isConnected
+                                                ? () => locator<RoutesService>().navigateTo(AppRoutes.previewView)
+                                                : null,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                            },
                           ),
-                          SizedBox(height: 16.h),
-                          _buildSectionButton(
-                            title: 'Preview & Configure',
-                            icon: Icons.list_alt,
-                            isEnabled: isConnected,
-                            onTap: isConnected
-                                ? () => _navigateToSection(
-                              'Preview & Configure',
-                              AppRoutes.previewView,
-                              SessionPage.preview,
-                            )
-                                : null,
-                          ),
-                        ],
-                      ),
-                    ),
+                        );
+                      }
+                      return AppPages.onGenerateRoute(settings);
+                    },
                   ),
                 );
               },
@@ -211,74 +223,3 @@ class _TrainingLayoutViewMobileState extends State<TrainingLayoutViewMobile> {
   }
 }
 
-class _TrainingDetailPage extends StatefulWidget {
-  final String title;
-  final String route;
-  final SessionPage page;
-
-  const _TrainingDetailPage({
-    required this.title,
-    required this.route,
-    required this.page,
-  });
-
-  @override
-  State<_TrainingDetailPage> createState() => _TrainingDetailPageState();
-}
-
-class _TrainingDetailPageState extends State<_TrainingDetailPage> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: appBleDeviceBloc,
-      child: BlocBuilder<AppBleDeviceBloc, AppBleDeviceState>(
-        builder: (context, stateBle) {
-          if (stateBle is DeviceIsDisconnected) {
-            final isConnected = ((cameraWiBloc.lastConnectedSsid != null &&
-                cameraWiBloc.lastConnectedSsid != '') ||
-                (cameraWiBloc.withWire != null && cameraWiBloc.withWire == true)) &&
-                appBleDeviceBloc.deviceConn?.remoteId != null;
-            if (!isConnected && widget.page == SessionPage.preview) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (mounted) Navigator.pop(context);
-              });
-            }
-          }
-
-          return BlocProvider.value(
-            value: cameraWiBloc,
-            child: BlocBuilder<CameraWifiBloc, CameraWifiState>(
-              builder: (context, stateCam) {
-                if (stateCam is DisConnectedCam) {
-                  final isConnected = ((cameraWiBloc.lastConnectedSsid != null &&
-                      cameraWiBloc.lastConnectedSsid != '') ||
-                      (cameraWiBloc.withWire != null && cameraWiBloc.withWire == true)) &&
-                      appBleDeviceBloc.deviceConn?.remoteId != null;
-                  if (!isConnected && widget.page == SessionPage.preview) {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      if (mounted) Navigator.pop(context);
-                    });
-                  }
-                }
-
-                return Scaffold(
-                  backgroundColor: AppTheme.background(context),
-                  body: Navigator(
-                    key: locator<RoutesService>().navigatorKey,
-                    initialRoute: widget.route,
-                    clipBehavior: Clip.none,
-                    onGenerateRoute: AppPages.onGenerateRoute,
-                  ),
-                );
-              },
-            ),
-          );
-        },
-      ),
-    );}
-}

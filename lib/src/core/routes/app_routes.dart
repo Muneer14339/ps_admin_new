@@ -15,4 +15,6 @@ abstract class AppRoutes {
   static const userAlert = '/user-alert';
   static const chooseWifiBle = '/choose_Wifi_Ble';
   static const startSession = '/start-session';
+  static const trainingLayoutMobile = '/training-layout-mobile';
+  static const trainingWrapper = '/training-wrapper';
 }
