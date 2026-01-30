@@ -40,6 +40,8 @@ class AppPages {
 
   /// The route generator function for MaterialApp
   static Route<dynamic>? onGenerateRoute(RouteSettings settings) {
+    print("ROute Name :*************************");
+    print(settings.name);
     switch (settings.name) {
       case AppRoutes.trainingLayout:
         return _noTransitionRoute(const TrainingLayoutView(), settings);
@@ -72,6 +74,8 @@ class AppPages {
         return _noTransitionRoute(const UserAlert(), settings);
 
       default:
+        print("ROute Name :*************************");
+        print(settings.name);
         return MaterialPageRoute(
           builder: (_) => const Scaffold(
             body: Center(child: Text('404 - Page Not Found')),
