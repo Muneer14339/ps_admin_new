@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:pa_sreens/src/core/app%20config/device_config.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:wifi_iot/wifi_iot.dart';
 import '../../../../../core/enum/session_enum.dart';
@@ -279,7 +280,7 @@ class _ChooseWifiBleState extends State<ChooseWifiBle> {
               ],
             ),
           ),
-          floatingActionButton:         InkWell(
+          floatingActionButton:  !DeviceConfig.isMobile(context)?InkWell(
             onTap: () {
               locator<RoutesService>().goBack();
             },
@@ -302,7 +303,7 @@ class _ChooseWifiBleState extends State<ChooseWifiBle> {
                 color: AppTheme.primary(context),
               ),
             ),
-          ),
+          ):null,
 
         );
       },

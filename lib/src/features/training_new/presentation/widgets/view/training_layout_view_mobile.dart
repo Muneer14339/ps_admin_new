@@ -85,18 +85,11 @@ class _TrainingLayoutViewMobileState extends State<TrainingLayoutViewMobile> {
             value: cameraWiBloc,
             child: BlocBuilder<CameraWifiBloc, CameraWifiState>(
               builder: (context, stateCam) {
-                final isConnected = ((cameraWiBloc.lastConnectedSsid != null &&
-                    cameraWiBloc.lastConnectedSsid != '') ||
-                    (cameraWiBloc.withWire != null && cameraWiBloc.withWire == true)) &&
-                    appBleDeviceBloc.deviceConn?.remoteId != null;
-
                 return Scaffold(
                   backgroundColor: AppTheme.background(context),
                   body: Navigator(
                     key: locator<RoutesService>().navigatorKey,
                     onGenerateRoute: (settings) {
-                      print("Names*************");
-                      print(settings.name);
                       if (settings.name == '/') {
                         return MaterialPageRoute(
                           builder: (_) => BlocBuilder<AppBleDeviceBloc, AppBleDeviceState>(
@@ -110,29 +103,44 @@ class _TrainingLayoutViewMobileState extends State<TrainingLayoutViewMobile> {
                                       (cameraWiBloc.withWire != null && cameraWiBloc.withWire == true)) &&
                                       appBleDeviceBloc.deviceConn?.remoteId != null;
 
-                                  return SafeArea(
-                                    child: Padding(
-                                      padding: AppTheme.paddingLarge,
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                                        children: [
-                                          SizedBox(height: 20.h),
-                                          _buildSectionButton(
-                                            title: 'Session Setup',
-                                            icon: Icons.settings,
-                                            isEnabled: true,
-                                            onTap: () => locator<RoutesService>().navigateTo(AppRoutes.setupView),
-                                          ),
-                                          SizedBox(height: 16.h),
-                                          _buildSectionButton(
-                                            title: 'Preview & Configure',
-                                            icon: Icons.list_alt,
-                                            isEnabled: isConnected,
-                                            onTap: isConnected
-                                                ? () => locator<RoutesService>().navigateTo(AppRoutes.previewView)
-                                                : null,
-                                          ),
-                                        ],
+                                  return Scaffold(
+                                    backgroundColor: AppTheme.background(context),
+                                    appBar: AppBar(
+                                      backgroundColor: AppTheme.background(context),
+                                      elevation: 0,
+                                      centerTitle: false,
+                                      title: Text(
+                                        'Training Session',
+                                        style: TextStyle(
+                                          color: AppTheme.primary(context),
+                                          fontSize: 18.sp,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                    body: SafeArea(
+                                      child: Padding(
+                                        padding: AppTheme.paddingLarge,
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                                          children: [
+                                            _buildSectionButton(
+                                              title: 'Session Setup',
+                                              icon: Icons.settings,
+                                              isEnabled: true,
+                                              onTap: () => locator<RoutesService>().navigateTo(AppRoutes.setupView),
+                                            ),
+                                            SizedBox(height: 16.h),
+                                            _buildSectionButton(
+                                              title: 'Preview & Configure',
+                                              icon: Icons.list_alt,
+                                              isEnabled: isConnected,
+                                              onTap: isConnected
+                                                  ? () => locator<RoutesService>().navigateTo(AppRoutes.previewView)
+                                                  : null,
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   );

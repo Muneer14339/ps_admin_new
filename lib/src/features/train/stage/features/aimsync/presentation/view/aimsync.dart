@@ -12,6 +12,7 @@ import 'package:pa_sreens/src/core/widgets/train_background.dart';
 import 'package:pa_sreens/src/features/train/stage/features/aimsync/presentation/component/aimsync_tile.dart';
 import 'package:pa_sreens/src/features/train/stage/data/model/stage_entity.dart';
 import 'package:pa_sreens/src/features/train/stage/presentation/stage_bloc/stage_bloc.dart';
+import '../../../../../../../core/app config/device_config.dart';
 import '../../../../../../../core/theme/theme_data/theme_data.dart';
 import '../../../../../../../core/widgets/border_button.dart';
 import '../../../../../../../core/widgets/dropdown_custom.dart';
@@ -379,5 +380,254 @@ class _SelectCandenceState extends State<SelectCandence> {
         ),
       ],
     );
+  }
+}
+
+
+// For Mobiles
+class AudioAlertsSelectorMobile extends StatefulWidget {
+  const AudioAlertsSelectorMobile({super.key});
+
+  @override
+  State<AudioAlertsSelectorMobile> createState() => _AudioAlertsSelectorMobileState();
+}
+
+class _AudioAlertsSelectorMobileState extends State<AudioAlertsSelectorMobile> {
+  final List<String> options = ['Light', 'Medium', 'High', 'Ultra High'];
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'AimSync Sensitivity',
+          style: TextStyle(
+            color: AppTheme.textPrimary(context),
+            fontSize: 14.sp,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Container(
+          height: 50,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: AppTheme.background(context).withOpacity(0.2),
+            border: Border.all(
+                color: AppTheme.primary(context).withOpacity(0.2), width: 1),
+            borderRadius: BorderRadius.circular(8),
+            boxShadow: [
+              BoxShadow(
+                color: AppTheme.primary(context).withOpacity(0.2),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final itemWidth = constraints.maxWidth / 4;
+              return Stack(
+                children: [
+                  AnimatedPositioned(
+                    duration: const Duration(milliseconds: 100),
+                    curve: Curves.elasticIn,
+                    left: selectedIndexNew * itemWidth,
+                    top: 0,
+                    bottom: 0,
+                    width: itemWidth,
+                    child: Container(
+                      margin: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: AppTheme.primary(context),
+                          width: 2,
+                        ),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: List.generate(
+                      options.length,
+                          (index) => Expanded(
+                        child: GestureDetector(
+                          onTap: () async {
+                            int pfi = index == 0 ? 2 : index == 1 ? 3 : index == 2 ? 5 : 6;
+                            await SingleLineStagesHelper().updateAimSyncinStage(
+                                locator<LocalStorageService>().userIdString, '$pfi');
+                            appBleDeviceBloc.add(SendCommandSingle(pfi));
+                            if (mounted) {
+                              setState(() {
+                                selectedIndexNew = index;
+                              });
+                            }
+                            toast('✅Sensitivity Updated');
+                          },
+                          child: Container(
+                            alignment: Alignment.center,
+                            child: AnimatedDefaultTextStyle(
+                              curve: Curves.elasticInOut,
+                              duration: const Duration(milliseconds: 300),
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: selectedIndexNew == index
+                                    ? AppTheme.textPrimary(context)
+                                    : AppTheme.textPrimary(context).withOpacity(0.6),
+                                fontSize: selectedIndexNew == index ? 16 : 14,
+                                fontWeight: selectedIndexNew == index
+                                    ? FontWeight.w600
+                                    : FontWeight.w400,
+                              ),
+                              child: Text(options[index]),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class SelectCandenceMobile extends StatefulWidget {
+  final int selectedIndexCad;
+
+  const SelectCandenceMobile({super.key, required this.selectedIndexCad});
+
+  @override
+  State<SelectCandenceMobile> createState() => _SelectCandenceMobileState();
+}
+
+class _SelectCandenceMobileState extends State<SelectCandenceMobile> {
+  final List<String> options = ['Open session', 'Cadence'];
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Select Session',
+          style: TextStyle(
+            color: AppTheme.textPrimary(context),
+            fontSize: 14.sp,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Container(
+          height: 50,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: AppTheme.background(context).withOpacity(0.2),
+            border: Border.all(
+                color: AppTheme.primary(context).withOpacity(0.2), width: 1),
+            borderRadius: BorderRadius.circular(8),
+            boxShadow: [
+              BoxShadow(
+                color: AppTheme.primary(context).withOpacity(0.2),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final itemWidth = constraints.maxWidth / 2;
+              return Stack(
+                children: [
+                  AnimatedPositioned(
+                    duration: const Duration(milliseconds: 100),
+                    curve: Curves.elasticIn,
+                    left: widget.selectedIndexCad * itemWidth,
+                    top: 0,
+                    bottom: 0,
+                    width: itemWidth,
+                    child: Container(
+                      margin: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: AppTheme.primary(context),
+                          width: 2,
+                        ),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: List.generate(
+                      options.length,
+                          (index) => Expanded(
+                        child: GestureDetector(
+                          onTap: () async {
+                            context.read<TrainingBloc>().add(SelectIsCadOrRegularEvent(index));
+                          },
+                          child: Container(
+                            alignment: Alignment.center,
+                            child: AnimatedDefaultTextStyle(
+                              curve: Curves.elasticInOut,
+                              duration: const Duration(milliseconds: 300),
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: widget.selectedIndexCad == index
+                                    ? AppTheme.textPrimary(context)
+                                    : AppTheme.textPrimary(context).withOpacity(0.6),
+                                fontSize: widget.selectedIndexCad == index ? 16 : 14,
+                                fontWeight: widget.selectedIndexCad == index
+                                    ? FontWeight.w600
+                                    : FontWeight.w400,
+                              ),
+                              child: Text(options[index]),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class AudioAlertsSelectorWrapper extends StatelessWidget {
+  const AudioAlertsSelectorWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return DeviceConfig.isMobile(context)
+        ? const AudioAlertsSelectorMobile()
+        : const AudioAlertsSelector();
+  }
+}
+
+class SelectCandenceWrapper extends StatelessWidget {
+  final int selectedIndexCad;
+
+  const SelectCandenceWrapper({super.key, required this.selectedIndexCad});
+
+  @override
+  Widget build(BuildContext context) {
+    return DeviceConfig.isMobile(context)
+        ? SelectCandenceMobile(selectedIndexCad: selectedIndexCad)
+        : SelectCandence(selectedIndexCad: selectedIndexCad);
   }
 }

@@ -9,6 +9,7 @@ import '../../features/training_new/presentation/widgets/components/user_alerts.
 import '../../features/training_new/presentation/widgets/components/wifi_list.dart';
 import '../../features/training_new/presentation/widgets/pages/active_view.dart';
 import '../../features/training_new/presentation/widgets/pages/pre_view.dart';
+import '../../features/training_new/presentation/widgets/pages/preview_view_wrapper.dart';
 import '../../features/training_new/presentation/widgets/pages/setup_view.dart';
 import '../../features/training_new/presentation/widgets/view/training_layout_view.dart';
 import '../../features/training_new/presentation/widgets/view/training_layout_view_mobile.dart';
@@ -20,7 +21,7 @@ class AppPages {
     AppRoutes.trainingLayout: (_) => const TrainingLayoutView(),
     AppRoutes.setupView: (_) => const SessionSetupView(),
     AppRoutes.activeView: (_) => const SessionActiveView(),
-    AppRoutes.previewView: (_) => const SessionPreviewView(),
+    AppRoutes.previewView: (_) => const SessionPreviewViewWrapper(),
     AppRoutes.chooseWifiBle: (_) => const ChooseWifiBle(),
     AppRoutes.wifiList: (_) => const WifiList(),
     AppRoutes.bleList: (_) => const BleList(),
@@ -55,7 +56,7 @@ class AppPages {
         return _noTransitionRoute(const SessionActiveView(), settings);
 
       case AppRoutes.previewView:
-        return _noTransitionRoute(const SessionPreviewView(), settings);
+        return _noTransitionRoute(const SessionPreviewViewWrapper(), settings);
 
       case AppRoutes.chooseWifiBle:
         return _noTransitionRoute(const ChooseWifiBle(), settings);
