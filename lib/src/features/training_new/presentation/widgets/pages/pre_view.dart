@@ -517,6 +517,7 @@ class SectionCard extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 8.h),
       decoration: BoxDecoration(
         color: AppTheme.background(context),
+
         borderRadius: BorderRadius.circular(12.r),
         // border: Border.all(color:  AppTheme.primary(context).withOpacity(0.2), width: 1),
       ),

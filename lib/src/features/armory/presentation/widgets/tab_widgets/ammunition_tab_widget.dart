@@ -54,9 +54,25 @@ class AmmunitionTabWidget extends StatelessWidget {
 
     if (state is ArmoryDataLoaded) {
       if (state.ammunition.isEmpty) {
-        return const EmptyStateWidget(
-          message: 'No ammunition lots yet.',
-          icon: Icons.add_circle_outline,
+        return Builder(
+          builder: (context) => EmptyStateWidget(
+            message: 'No ammunition lots yet.',
+            icon: Icons.add_circle_outline,
+            onTap: () {
+              if (state.firearms.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Please add a firearm first.'),
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+              } else {
+                context.read<ArmoryBloc>().add(
+                  ShowAddFormEvent(tabType: ArmoryTabType.ammunition),
+                );
+              }
+            },
+          ),
         );
       }
 

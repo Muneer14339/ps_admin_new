@@ -330,6 +330,7 @@ class CommonWidgets {
       if (i + 1 < children.length) {
         rows.add(
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(child: children[i]),
               const SizedBox(width: ArmoryConstants.fieldSpacing),
@@ -344,6 +345,8 @@ class CommonWidgets {
         rows.add(const SizedBox(height: ArmoryConstants.fieldSpacing));
       }
     }
-    return Column(children: rows);
+    return Column(
+        children: rows
+    );
   }
 }

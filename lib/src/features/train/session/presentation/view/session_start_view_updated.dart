@@ -31,6 +31,7 @@ import 'package:pa_sreens/src/features/train/session/presentation/bloc/session_b
 import 'package:pa_sreens/src/features/train/session/presentation/view/session_completed_view.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:uuid/uuid.dart';
+import '../../../../../core/app config/device_config.dart';
 import '../../../../../core/enum/session_enum.dart';
 import '../../../../../core/routes/app_routes.dart';
 import '../../../../../core/routes/routes_services.dart';
@@ -81,10 +82,16 @@ class _SessionStartViewUpdatedState extends State<SessionStartViewUpdated> {
   int? distance_new;
   int currentShootNew = 0;
   late AudioPlayer audioPlayer;
+  late final bool _isMobile;
+
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _isMobile = DeviceConfig.isMobile(context);
+
+    });
     checkD = false;
     audioPlayer = AudioPlayer();
     if (widget.withCable) {
@@ -95,11 +102,20 @@ class _SessionStartViewUpdatedState extends State<SessionStartViewUpdated> {
     print("distance_new==$distance_new");
     slRtspStreamingBloc.add(
         RtspStreamingEvent.started(1, distance_new ?? 1, widget.withCable));
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
-    SystemChrome.setPreferredOrientations(
-        [DeviceOrientation.landscapeRight, DeviceOrientation.landscapeLeft]);
+    // SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
+    // SystemChrome.setPreferredOrientations(
+    //     [DeviceOrientation.landscapeRight, DeviceOrientation.landscapeLeft]);
     _requestPermission();
     KeepScreenOn.turnOn();
+
+  }
+  Future<void> _restorePortrait() async {
+    if(_isMobile){
+      await SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ]);
+    }
   }
 
   @override
@@ -107,14 +123,16 @@ class _SessionStartViewUpdatedState extends State<SessionStartViewUpdated> {
     _timer?.cancel();
     checkD = false;
     stopBeepTimer();
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeRight,
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown
-    ]);
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-        overlays: SystemUiOverlay.values);
+    _restorePortrait();
+    // if(DeviceConfig.isMobile(context)){
+    //   SystemChrome.setPreferredOrientations([
+    //     DeviceOrientation.portraitUp,
+    //     DeviceOrientation.portraitDown
+    //   ]);
+    // }
+
+    // SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+    //     overlays: SystemUiOverlay.values);
 
     widget.withCable ? UsbCameraManager.dispose() : null;
 
@@ -346,6 +364,10 @@ class _SessionStartViewUpdatedState extends State<SessionStartViewUpdated> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+    ]);
     return Scaffold(
       backgroundColor: AppColors.sliderDotsColor,
       body: BlocBuilder<SessionBloc, SessionState>(

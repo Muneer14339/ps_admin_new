@@ -1,7 +1,10 @@
+import 'package:external_app_launcher/external_app_launcher.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../core/app config/device_config.dart';
 import '../../../../core/services/local_storage_service/local_storage_service.dart';
 import '../../../../core/services/locator/locator.dart';
 import '../../../../core/services/session_sync_service.dart';
@@ -141,10 +144,11 @@ class _HistoryTabWidgetState extends State<HistoryTabWidget> {
             value: slSessionHistoryBloc,
             child: BlocBuilder<SessionHistoryBloc, SessionHistoryState>(
                 builder: (context, state) {
-                  return
+                  final isMobile = DeviceConfig.isMobile(context);
+                  return Expanded(
+                    child:
                     state.session.isNotEmpty?
-                    Expanded(
-                      child: RefreshIndicator(
+                     RefreshIndicator(
                         onRefresh: () async {
                           slSessionHistoryBloc.add(SessionHistoryEvent.getAllSessions());
                         },
@@ -152,13 +156,13 @@ class _HistoryTabWidgetState extends State<HistoryTabWidget> {
                           shrinkWrap: true,
                           padding: const EdgeInsets.all(16),
 
-                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
+                          gridDelegate:  SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: isMobile ? 1 : 2,
                             crossAxisSpacing: 16,
                             mainAxisSpacing: 16,
                             childAspectRatio: 3,
                           ),
-                          itemCount: state.session.length,
+                          itemCount: state.session.length > 3 ? 3 : state.session.length,
                           itemBuilder: (context, index) {
                             final session = state.session[index];
                             return SessionCard(
@@ -168,19 +172,97 @@ class _HistoryTabWidgetState extends State<HistoryTabWidget> {
                             );
                           },
                         ),
-                      ),
-                    )
-                        : _buildEmptyHistory(context);
-
+                      ): _buildEmptyHistory(context)
+                    );
                 }),
           ),
-
+          _buildShoQCard(context),
         ],
       ),
     );
   }
 
+  Widget _buildShoQCard(BuildContext context) {
+    final isMobile = DeviceConfig.isMobile(context);
+    return Align(
+        alignment: Alignment.center,
+        child: FractionallySizedBox(
+            widthFactor: isMobile ? 1 : 0.5,
+            child: Container(
 
+      margin: EdgeInsets.only(top: AppTheme.spacingLarge),
+      padding: AppTheme.paddingLarge,
+      decoration: BoxDecoration(
+        color: AppTheme.primary(context).withOpacity(0.1),
+        borderRadius: BorderRadius.circular(AppTheme.radiusXLarge),
+        border: Border.all(color: AppTheme.primary(context).withOpacity(0.3)),
+      ),
+      child:Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.description, color: AppTheme.primary(context), size: 50),
+              SizedBox(width: AppTheme.spacingLarge),
+              Expanded(child: _buildContent(context)),
+              SizedBox(width: AppTheme.spacingLarge),
+            ],
+          ),
+          SizedBox(
+            width: double.infinity,
+            child: _buildButton(context),
+          ),
+        ],
+      )
+    )));
+  }
+
+  Widget _buildContent(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text('Continue in ShoQ Journal', style: AppTheme.titleLarge(context)),
+        SizedBox(height: AppTheme.spacingSmall),
+        Text(
+          'ShoQ Journal is where long-term trends, coach feedback, and AI performance analysis live.',
+          style: AppTheme.bodySmall(context).copyWith(color: AppTheme.textSecondary(context)),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildButton(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () async {
+        const packageName = 'com.pa.shoq';
+
+        bool isInstalled = await LaunchApp.isAppInstalled(androidPackageName: packageName);
+
+        if (isInstalled) {
+          await LaunchApp.openApp(androidPackageName: packageName);
+        } else {
+          final storeUri = Uri.parse('https://play.google.com/store/apps/details?id=$packageName');
+          await launchUrl(storeUri, mode: LaunchMode.externalApplication);
+        }
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppTheme.primary(context),
+        padding: EdgeInsets.symmetric(
+          horizontal: AppTheme.spacingLarge,
+          vertical: AppTheme.spacingMedium,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text('View Full Performance History', style: TextStyle(color: Colors.white)),
+          SizedBox(width: AppTheme.spacingSmall),
+          Icon(Icons.arrow_forward, color: Colors.white, size: AppTheme.iconSmall),
+        ],
+      ),
+    );
+  }
 
 
   // Widget _buildSyncButtons(BuildContext context, String userId) {

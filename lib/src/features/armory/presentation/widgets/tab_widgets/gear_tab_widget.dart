@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../core/enum/tab_enums.dart';
 import '../../../domain/entities/armory_gear.dart';
+import '../../bloc/armory_bloc.dart';
+import '../../bloc/armory_event.dart';
 import '../../bloc/armory_state.dart';
 import '../add_forms/add_gear_form.dart';
 import '../common/common_delete_dilogue.dart';
@@ -42,9 +45,14 @@ class GearTabWidget extends StatelessWidget {
       }
 
       if (gearByCategory.isEmpty) {
-        return const EmptyStateWidget(
-          message: 'No gear items yet.',
-          icon: Icons.add_circle_outline,
+        return Builder(
+          builder: (context) => EmptyStateWidget(
+            message: 'No gear items yet.',
+            icon: Icons.add_circle_outline,
+            onTap: () => context.read<ArmoryBloc>().add(
+              ShowAddFormEvent(tabType: ArmoryTabType.gear),
+            ),
+          ),
         );
       }
 

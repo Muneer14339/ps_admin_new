@@ -6,9 +6,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../core/app config/app_config.dart';
 import '../../../core/app config/device_config.dart';
+import '../../../core/navigation/navigation_cubit.dart';
 import '../../../core/services/local_storage_service/local_storage_service.dart';
 import '../../../core/services/locator/locator.dart';
 import '../../../core/theme/theme_data/theme_data.dart';
+import '../../armory/presentation/pages/enhanced_armory_tab_view.dart';
 import '../../auth_new/authentication/presentation/bloc/auth_bloc.dart';
 import '../../auth_new/authentication/presentation/pages/login_page.dart';
 import '../../session_history/presentation/view/history_tab_view.dart';
@@ -26,8 +28,12 @@ class MainAppPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MainAppView();
+    return BlocProvider(
+      create: (_) => NavigationCubit(),
+      child: const MainAppView(),
+    );
   }
+
 }
 
 class MainAppView extends StatefulWidget {
@@ -130,7 +136,13 @@ class _MainAppViewState extends State<MainAppView> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthBloc, AuthState>(
+    return BlocListener<NavigationCubit, int>(
+        listener: (context, index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        child: BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         state.maybeMap(
           unauthenticated: (_) {
@@ -157,7 +169,7 @@ class _MainAppViewState extends State<MainAppView> {
         appBar: DeviceConfig.isMobile(context) && _currentIndex != 2 ? _buildAppBar() : null,
 
       ),
-    );
+    ));
   }
 
   PreferredSizeWidget _buildAppBar() {
@@ -227,9 +239,7 @@ class _MainAppViewState extends State<MainAppView> {
             child: GestureDetector(
               behavior: HitTestBehavior.opaque,
               onTap: () {
-                setState(() {
-                  _currentIndex = index;
-                });
+                context.read<NavigationCubit>().navigateToTab(index);
               },
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 250),

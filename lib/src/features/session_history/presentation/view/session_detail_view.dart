@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'dart:io';
 
+import '../../../../core/app config/device_config.dart';
 import '../../../../core/services/local_storage_service/local_storage_service.dart';
 import '../../../../core/theme/color/app_colors_new.dart';
 import '../../../../core/theme/theme_data/theme_data.dart';
@@ -168,9 +169,9 @@ class _SessionDetailViewState extends State<SessionDetailView> {
             Expanded(
               child: TabBarView(
                 children: [
-                  _buildShotCountTab(),
-                  _buildSessionSummaryTab(),
-                  _buildSessionAlbumTab(),
+                  DeviceConfig.isMobile(context) ? _buildShotCountTabMobile() : _buildShotCountTab(),
+                  DeviceConfig.isMobile(context) ? _buildSessionSummaryTabMobile() : _buildSessionSummaryTab(),
+                  DeviceConfig.isMobile(context) ? _buildSessionAlbumTabMobile() : _buildSessionAlbumTab(),
                 ],
               ),
             ),
@@ -618,6 +619,229 @@ class _SessionDetailViewState extends State<SessionDetailView> {
     );
   }
 
+  // For Mobile
+// Shot Count Tab - Mobile
+  Widget _buildShotCountTabMobile() {
+    final shots = widget.session.shotsList;
+    if (shots == null || shots.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.image_not_supported, color: AppColors.white.withOpacity(0.3), size: 48.sp),
+            Gap(8.h),
+            Text('No shot details available', style: TextStyle(color: AppColors.white.withOpacity(0.5), fontSize: 14.sp)),
+          ],
+        ),
+      );
+    }
+
+    return Padding(
+      padding: EdgeInsets.all(12.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('🎯 Performance', style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: AppColors.orange)),
+          Gap(12.h),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Card(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+                clipBehavior: Clip.antiAlias,
+                child: SizedBox(
+                  width: double.infinity,
+                  child: DataTable(
+                    columnSpacing: 15.w,
+                    headingRowHeight: 40.h,
+                    dataRowHeight: 35.h,
+                    dividerThickness: 0.5,
+                    headingRowColor: WidgetStateProperty.all(AppColors.lightGry),
+                    dataRowColor: WidgetStateProperty.all(AppColors.lightGry),
+                    dataTextStyle: TextStyle(fontFamily: AppFontFamily.regular, color: AppColors.white, fontSize: 11.sp),
+                    columns: [
+                      DataColumn(label: Text('Shot', style: TextStyle(fontFamily: AppFontFamily.bold, color: AppColors.orange, fontSize: 12.sp))),
+                      DataColumn(label: Text('Score', style: TextStyle(fontFamily: AppFontFamily.bold, color: AppColors.orange, fontSize: 12.sp))),
+                      DataColumn(label: Text('Split', style: TextStyle(fontFamily: AppFontFamily.bold, color: AppColors.orange, fontSize: 12.sp))),
+                      DataColumn(label: Text('Direction', style: TextStyle(fontFamily: AppFontFamily.bold, color: AppColors.orange, fontSize: 12.sp))),
+                    ],
+                    rows: shots.map((shot) {
+                      return DataRow(
+                        cells: [
+                          DataCell(Text('${shot.shootNumber ?? ''}')),
+                          DataCell(Text('${shot.shootScore ?? ''}')),
+                          DataCell(Text(shot.shootNumber == 1 ? '--' : shot.splitTime != null ? '${(shot.splitTime! / 1000).toStringAsFixed(2)}"' : '--')),
+                          DataCell(Text(shot.shotDirection ?? '')),
+                        ],
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+// Session Summary Tab - Mobile
+  Widget _buildSessionSummaryTabMobile() {
+    if (isLoading) {
+      return Center(child: CircularProgressIndicator(color: AppColors.kPrimaryColor));
+    }
+
+    final stage = widget.session.saveStageEntity;
+    final totalShots = widget.session.playedShots ?? 0;
+    final shots = widget.session.shotsList ?? [];
+
+    int totalScore = 0;
+    int highestScore = 0;
+    int lowestScore = shots.isNotEmpty ? (shots.first.shootScore ?? 0) : 0;
+    double averageScore = 0;
+
+    for (var shot in shots) {
+      final score = shot.shootScore ?? 0;
+      totalScore += score;
+      if (score > highestScore) highestScore = score;
+      if (score < lowestScore) lowestScore = score;
+    }
+
+    if (shots.isNotEmpty) {
+      averageScore = totalScore / shots.length;
+    }
+
+    int totalSplitTimeMs = 0;
+    int? lowestSplitTimeMs;
+
+    for (var shot in shots) {
+      if (shot.splitTime != null) {
+        totalSplitTimeMs += shot.splitTime!;
+        if (lowestSplitTimeMs == null || shot.splitTime! < lowestSplitTimeMs) {
+          lowestSplitTimeMs = shot.splitTime;
+        }
+      }
+    }
+
+    final sessionItems = <MapEntry<String, String>>[
+      MapEntry('Target Type', 'PulseAim Target'),
+      if (loadout != null) MapEntry('Loadout', loadout!.name),
+      if (firearm != null) MapEntry('Firearm', '${firearm!.type ?? ''}, ${firearm!.brand}'),
+      if (ammunition != null) MapEntry('Ammunition', '${ammunition!.brand} ${ammunition!.caliber}'),
+      if (stage?.mountLocation != null) MapEntry('AimSync Mount', '${stage!.mountLocation}'),
+      MapEntry('Training Mode', 'Practice'),
+      if (stage?.dominantHand != null) MapEntry('Hand', '${stage!.dominantHand}'),
+      if (stage?.venue != null) MapEntry('Venue', '${stage!.venue}'),
+      if (stage?.distance != null) MapEntry('Distance', '${stage!.distance}'),
+      if (stage?.mode?.name != null) MapEntry('Scoring', '${stage!.mode!.name}'),
+    ];
+
+    final perfItems = <MapEntry<String, String>>[
+      MapEntry('Total Shots', '$totalShots'),
+      MapEntry('Missing', '${shots.where((s) => s.shootScore == 0).length}'),
+      MapEntry('Total Score', '$totalScore'),
+      MapEntry('Highest', '$highestScore'),
+      MapEntry('Lowest', '$lowestScore'),
+      MapEntry('Average', averageScore.toStringAsFixed(2)),
+      MapEntry('Total Time', '${(totalSplitTimeMs / 1000).toStringAsFixed(2)}"'),
+      if (lowestSplitTimeMs != null) MapEntry('Quick Split', '${(lowestSplitTimeMs / 1000).toStringAsFixed(2)}"'),
+    ];
+
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(12.w),
+      child: Column(
+        children: [
+          _InfoCard(icon: Icons.receipt, title: 'Session Parameters', items: sessionItems),
+          SizedBox(height: 12.h),
+          _InfoCard(icon: Icons.bar_chart, title: 'Performance Summary', items: perfItems),
+        ],
+      ),
+    );
+  }
+
+// Session Album Tab - Mobile
+  Widget _buildSessionAlbumTabMobile() {
+    final shots = widget.session.shotsList;
+    if (shots == null || shots.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.photo_library, color: AppColors.white.withOpacity(0.3), size: 80.sp),
+            Gap(16.h),
+            Text('No images available', style: TextStyle(color: AppColors.white.withOpacity(0.5), fontSize: 16.sp)),
+          ],
+        ),
+      );
+    }
+
+    final shotsWithImages = shots.where((shot) => shot.shootImagePath != null && shot.shootImagePath!.isNotEmpty).toList();
+
+    if (shotsWithImages.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.photo_library, color: AppColors.white.withOpacity(0.3), size: 80.sp),
+            Gap(16.h),
+            Text('No images available', style: TextStyle(color: AppColors.white.withOpacity(0.5), fontSize: 16.sp)),
+          ],
+        ),
+      );
+    }
+
+    return Padding(
+      padding: EdgeInsets.all(12.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: EdgeInsets.all(8.w),
+            decoration: BoxDecoration(color: AppColors.lightGry, borderRadius: BorderRadius.circular(8.r)),
+            child: Text('Session #${widget.session.sessionId ?? ''}', style: TextStyle(color: AppColors.white, fontWeight: FontWeight.w700, fontSize: 14.sp)),
+          ),
+          Gap(12.h),
+          Expanded(
+            child: GridView.builder(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 8.w,
+                mainAxisSpacing: 8.h,
+                childAspectRatio: 0.85,
+              ),
+              itemCount: shotsWithImages.length,
+              itemBuilder: (context, i) {
+                return GestureDetector(
+                  onTap: () => _showShotDetailDialog(context, shotsWithImages[i], i),
+                  child: Container(
+                    decoration: BoxDecoration(color: AppColors.white, borderRadius: BorderRadius.circular(8.r)),
+                    padding: EdgeInsets.all(6.w),
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(6.r),
+                            child: Image.file(File(shotsWithImages[i].shootImagePath ?? ''), fit: BoxFit.cover, width: double.infinity),
+                          ),
+                        ),
+                        Gap(4.h),
+                        Text(
+                          'Shot#${shotsWithImages[i].shootNumber ?? i + 1}  ${shotsWithImages[i].shootScore ?? 0}',
+                          style: TextStyle(color: shotsWithImages[i].shootScore == 0 ? AppColors.kRedColor : AppColors.black, fontSize: 11.sp),
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _showShotDetailDialog(BuildContext context, SaveShootModel shot, int index) {
     Navigator.push(
       context,
@@ -644,6 +868,7 @@ class _InfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = DeviceConfig.isMobile(context);
     return Container(
       decoration: BoxDecoration(
         color: AppColors.lightGry,
@@ -652,6 +877,8 @@ class _InfoCard extends StatelessWidget {
       padding: EdgeInsets.all(12),
       margin: EdgeInsets.only(bottom: 15.h),
       child: ListView(
+        shrinkWrap: isMobile,
+        physics: isMobile ? NeverScrollableScrollPhysics() : null,
         children: [
           Row(
             children: [
@@ -704,6 +931,7 @@ class _InfoCard extends StatelessWidget {
   }
 }
 
+
 // Full-screen shot detail view
 class ShotDetailFullScreen extends StatelessWidget {
   final SaveShootModel shot;
@@ -717,6 +945,7 @@ class ShotDetailFullScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = DeviceConfig.isMobile(context);
     return Scaffold(
       backgroundColor: AppColors.bg_gry,
       appBar: AppBar(
@@ -734,7 +963,56 @@ class ShotDetailFullScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: Row(
+      body: isMobile
+          ? Column(
+        children: [
+          Expanded(
+            flex: 3,
+            child: Container(
+              color: AppColors.bg_gry,
+              child: Center(
+                child: shot.shootImagePath != null && shot.shootImagePath!.isNotEmpty
+                    ? _buildFullImage(shot.shootImagePath!)
+                    : _buildNoImagePlaceholder(),
+              ),
+            ),
+          ),
+          Container(
+            width: double.infinity,
+            color: AppColors.lightGry,
+            padding: EdgeInsets.all(20.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Shot Details',
+                  style: TextStyle(
+                    color: AppColors.kPrimaryColor,
+                    fontSize: 18.sp,
+                    fontFamily: AppFontFamily.bold,
+                  ),
+                ),
+                Gap(16.h),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(child: _buildDetailRowMobile('Shot Number', '#$shotNumber')),
+                    SizedBox(width: 16.w),
+                    Expanded(child: _buildDetailRowMobile('Score', shot.shootScore?.toString() ?? 'N/A')),
+                    if (shot.splitTime != null) ...[
+                      SizedBox(width: 16.w),
+                      Expanded(child: _buildDetailRowMobile('Split Time', _formatSplitTime(shot.splitTime!))),
+                    ],
+                  ],
+                ),
+                Gap(16.h),
+              ],
+            ),
+          ),
+        ],
+      )
+          :Row(
         children: [
           // Image on the left (60%)
           Expanded(
@@ -843,6 +1121,35 @@ class ShotDetailFullScreen extends StatelessWidget {
             fontSize: 18.sp,
             fontFamily: AppFontFamily.bold,
           ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDetailRowMobile(String label, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            color: AppColors.white.withOpacity(0.7),
+            fontSize: 11.sp,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        Gap(4.h),
+        Text(
+          value,
+          style: TextStyle(
+            color: AppColors.white,
+            fontSize: 16.sp,
+            fontFamily: AppFontFamily.bold,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
       ],
     );

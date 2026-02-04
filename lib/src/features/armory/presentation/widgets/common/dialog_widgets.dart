@@ -1026,14 +1026,17 @@ class _SearchableDropdownFieldState extends State<_SearchableDropdownField> {
             ),
             onChanged: widget.enabled && !widget.isLoading
                 ? (value) {
-              setState(() {
-                _updateFilteredOptions();
-                if (!_showDropdown) {
-                  _DropdownStateManager.openDropdown(this);
-                  _showDropdown = true;
-                  _showDropdownOverlay();  // CHANGED
-                }
-              });
+              _updateFilteredOptions();
+              if (!_showDropdown) {
+                _DropdownStateManager.openDropdown(this);
+                setState(() => _showDropdown = true);
+                _showDropdownOverlay();
+              } else {
+                _overlayEntry?.remove();
+                _overlayEntry = null;
+                setState(() {});
+                _showDropdownOverlay();
+              }
             }
                 : null,
             onTap: widget.enabled && !widget.isLoading

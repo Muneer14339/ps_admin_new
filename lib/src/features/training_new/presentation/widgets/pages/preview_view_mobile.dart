@@ -160,6 +160,7 @@ class SessionPreviewViewMobile extends StatelessWidget {
         padding: EdgeInsets.all(16.w),
         decoration: BoxDecoration(
           color: AppTheme.background(context),
+
           borderRadius: BorderRadius.circular(8),
           border: Border.all(color: AppTheme.primary(context).withOpacity(0.2)),
         ),

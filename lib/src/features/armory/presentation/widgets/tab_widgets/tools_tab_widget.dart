@@ -132,7 +132,11 @@ class ToolsTabWidget extends StatelessWidget {
                 ],
               ),
             ),
-            const EmptyStateWidget(message: 'No tools or maintenance logs yet.', icon: Icons.add_circle_outline),
+            EmptyStateWidget(
+              message: 'No tools or maintenance logs yet.',
+              icon: Icons.add_circle_outline,
+              onTap: () => context.read<ArmoryBloc>().add(const ShowAddFormEvent(tabType: ArmoryTabType.tools)),
+            ),
           ],
         );
       }

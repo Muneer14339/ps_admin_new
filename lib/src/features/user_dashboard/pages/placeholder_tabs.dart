@@ -21,18 +21,26 @@ class HomeTabWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: AppTheme.paddingLarge,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildQuickActionsCard(context),
-          SizedBox(height: AppTheme.spacingXLarge),
-          _buildRecentItemsCard(context),
-        ],
-      ),
-    );
+    return  Container(
+        padding: AppTheme.paddingLarge,
+        decoration: AppTheme.cardDecoration(context),
+        child: const ComingSoonWidget());
   }
+
+  // @override
+  // Widget build(BuildContext context) {
+  //   return SingleChildScrollView(
+  //     padding: AppTheme.paddingLarge,
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         _buildQuickActionsCard(context),
+  //         SizedBox(height: AppTheme.spacingXLarge),
+  //         _buildRecentItemsCard(context),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _buildQuickActionsCard(BuildContext context) {
       return Container(
@@ -320,18 +328,18 @@ class ProfileTabWidget extends StatelessWidget {
   Widget _buildProfileSettings(BuildContext context) {
     return Column(
       children: [
-        _buildSettingTile(
-          context,
-          'Account Settings',
-          'Manage your account details',
-          Icons.account_circle_outlined,
-        ),
-        _buildSettingTile(
-          context,
-          'App Preferences',
-          'Customize your app experience',
-          Icons.settings_outlined,
-        ),
+        // _buildSettingTile(
+        //   context,
+        //   'Account Settings',
+        //   'Manage your account details',
+        //   Icons.account_circle_outlined,
+        // ),
+        // _buildSettingTile(
+        //   context,
+        //   'App Preferences',
+        //   'Customize your app experience',
+        //   Icons.settings_outlined,
+        // ),
         _buildSettingTile(
           context,
           'Data & Privacy',
@@ -346,7 +354,7 @@ class ProfileTabWidget extends StatelessWidget {
         ),
         _buildSettingTile(
           context,
-          'Help & Support',
+          'Terms of Use',
           'View Terms of Use',
           Icons.help_outline,
           onTap: () async {
@@ -591,5 +599,38 @@ class SessionImagesUploader {
       // ignore: avoid_print
       print('Response: ${resp.data}');
     }
+  }
+}
+
+
+class ComingSoonWidget extends StatelessWidget {
+  const ComingSoonWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.hourglass_empty_rounded,
+            size: 56,
+            color: AppTheme.textSecondary(context),
+          ),
+          SizedBox(height: AppTheme.spacingMedium),
+          Text(
+            'Coming Soon',
+            style: AppTheme.titleLarge(context),
+          ),
+          SizedBox(height: AppTheme.spacingSmall),
+          Text(
+            'This feature is under development',
+            style: AppTheme.bodySmall(context).copyWith(
+              color: AppTheme.textSecondary(context),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

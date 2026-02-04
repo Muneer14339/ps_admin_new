@@ -196,8 +196,11 @@ class _TrainingLayoutViewState extends State<TrainingLayoutView> {
 
   Widget _buildSideBar(TrainingState state) {
     return Container(
-      width: 0.35.sw,
-      color: AppTheme.background(context),
+      width: MediaQuery.of(context).size.width * 0.20,
+      decoration: BoxDecoration(
+        color: AppTheme.surface(context),
+        border: Border(right: BorderSide(color: AppTheme.border(context), width: 1)),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

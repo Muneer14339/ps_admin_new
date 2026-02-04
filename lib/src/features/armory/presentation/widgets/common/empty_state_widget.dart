@@ -8,34 +8,40 @@ import 'armory_constants.dart';
 class EmptyStateWidget extends StatelessWidget {
   final String message;
   final IconData? icon;
+  final VoidCallback? onTap;
 
   const EmptyStateWidget({
     super.key,
     required this.message,
     this.icon,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: ArmoryConstants.cardPadding,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (icon != null) ...[
-            Icon(
-              icon,
-              color: AppTheme.textSecondary(context),
-              size: ArmoryConstants.largeIcon,
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(ArmoryConstants.cardBorderRadius),
+      child: Padding(
+        padding: ArmoryConstants.cardPadding,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (icon != null) ...[
+              Icon(
+                icon,
+                color: AppTheme.textSecondary(context),
+                size: ArmoryConstants.largeIcon,
+              ),
+              const SizedBox(height: ArmoryConstants.itemSpacing),
+            ],
+            Text(
+              message,
+              style: AppTheme.bodySmall(context),
+              textAlign: TextAlign.center,
             ),
-            const SizedBox(height: ArmoryConstants.itemSpacing),
           ],
-          Text(
-            message,
-            style: AppTheme.bodySmall(context),
-            textAlign: TextAlign.center,
-          ),
-        ],
+        ),
       ),
     );
   }

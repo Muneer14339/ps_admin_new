@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../core/enum/tab_enums.dart';
+import '../../bloc/armory_bloc.dart';
+import '../../bloc/armory_event.dart';
 import '../../bloc/armory_state.dart';
 import '../add_forms/add_firearm_form.dart';
 import '../common/common_delete_dilogue.dart';
@@ -36,9 +39,14 @@ class FirearmsTabWidget extends StatelessWidget {
 
     if (state is ArmoryDataLoaded) {
       if (state.firearms.isEmpty) {
-        return const EmptyStateWidget(
-          message: 'No firearms added yet.',
-          icon: Icons.add_circle_outline,
+        return Builder(
+          builder: (context) => EmptyStateWidget(
+            message: 'No firearms added yet.',
+            icon: Icons.add_circle_outline,
+            onTap: () => context.read<ArmoryBloc>().add(
+              ShowAddFormEvent(tabType: ArmoryTabType.firearms),
+            ),
+          ),
         );
       }
 
@@ -53,9 +61,15 @@ class FirearmsTabWidget extends StatelessWidget {
       return CommonWidgets.buildError(state.message);
     }
 
-    return const EmptyStateWidget(
-      message: 'No firearms added yet.',
-      icon: Icons.add_circle_outline,
+    // firearms_tab_widget.dart - Empty state replace karo
+    return Builder(
+      builder: (context) => EmptyStateWidget(
+        message: 'No firearms added yet.',
+        icon: Icons.add_circle_outline,
+        onTap: () => context.read<ArmoryBloc>().add(
+          ShowAddFormEvent(tabType: ArmoryTabType.firearms),
+        ),
+      ),
     );
   }
 }

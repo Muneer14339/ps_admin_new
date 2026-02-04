@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pa_sreens/src/features/training_new/presentation/widgets/widgets_new/loadout_card_new.dart';
 import '../../../../../core/enum/session_enum.dart';
+import '../../../../../core/navigation/navigation_cubit.dart';
 import '../../../../../core/routes/app_pages.dart';
 import '../../../../../core/routes/app_routes.dart';
 import '../../../../../core/routes/locatore.dart';
@@ -214,9 +215,13 @@ class _LoadoutListContent extends StatelessWidget {
 
     if (state is ArmoryDataLoaded) {
       if (state.loadouts.isEmpty) {
-        return const EmptyStateWidget(
+        return EmptyStateWidget(
           message: 'No loadouts yet.',
           icon: Icons.add_circle_outline,
+          onTap: () {
+            Navigator.of(context).pop();
+            context.read<NavigationCubit>().navigateToTab(1);
+          },
         );
       }
 
