@@ -1,179 +1,155 @@
-// lib/armory/domain/usecases/sync_local_to_remote_usecase.dart - NEW FILE
+// lib/src/features/armory/domain/usecases/sync_remote_to_local_usecase.dart
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dartz/dartz.dart';
 import '../../../../core/services/error/failures.dart';
 import '../../../../core/services/logger.dart';
+import '../../../../core/services/sqflite_service/database_helper.dart';
 import '../../../../core/services/usecases/usecase.dart';
 import '../../data/datasources/armory_local_dataresouces.dart';
-import '../../data/datasources/armory_local_repository_impl.dart';
 import '../../data/datasources/armory_remote_datasource.dart';
 
-class SyncLocalToRemoteUseCase implements UseCase<void, UserIdParams> {
+class SyncRemoteToLocalUseCase implements UseCase<void, UserIdParams> {
   final ArmoryLocalDataSource localDataSource;
   final ArmoryRemoteDataSource remoteDataSource;
+  final DatabaseHelper dbHelper;
 
-  SyncLocalToRemoteUseCase({
+  SyncRemoteToLocalUseCase({
     required this.localDataSource,
     required this.remoteDataSource,
+    required this.dbHelper,
   });
 
-  // lib/armory/domain/usecases/sync_local_to_remote_usecase.dart - MODIFY to handle deletes
-  // lib/armory/domain/usecases/sync_local_to_remote_usecase.dart - MODIFY delete handling
   @override
   Future<Either<Failure, void>> call(UserIdParams params) async {
     try {
-      log.i('🔼 Starting upload sync for user: ${params.userId}');
+      final connectivityResult = await Connectivity().checkConnectivity();
+      if (connectivityResult == ConnectivityResult.none) {
+        log.w('⚠️ No internet - skipping download sync');
+        return const Right(null);
+      }
 
-      // Handle deletes first
-      final deletedFirearms = await (localDataSource as ArmoryLocalDataSourceImpl).getDeletedItems(params.userId, 'firearms');
-      for (final item in deletedFirearms) {
-        try {
-          await remoteDataSource.deleteFirearm(params.userId, item['id'] as String);
-        } catch (e) {
-          if (e.toString().contains('not-found')) {
-            log.i('ℹ️ Firearm ${item['id']} not in Firebase, skipping delete');
-          } else {
-            rethrow;
-          }
+      log.i('🔽 Download sync for: ${params.userId}');
+      final db = await dbHelper.database;
+
+      // Firearms
+      final remoteFirearms = await remoteDataSource.getFirearms(params.userId);
+      final remoteFirearmIds = remoteFirearms.map((e) => e.id!).toSet();
+      final localFirearms = await db.query('firearms', where: 'userId = ?', whereArgs: [params.userId]);
+
+      for (final local in localFirearms) {
+        if (!remoteFirearmIds.contains(local['id']) && local['syncStatus'] == 'synced') {
+          await db.delete('firearms', where: 'id = ? AND userId = ?', whereArgs: [local['id'], params.userId]);
         }
-        await (localDataSource as ArmoryLocalDataSourceImpl).db.then((db) =>
-            db.delete('firearms', where: 'id = ? AND userId = ?', whereArgs: [item['id'], params.userId])
-        );
       }
-      log.i('🗑️ Deleted ${deletedFirearms.length} firearms');
 
-      final deletedAmmo = await (localDataSource as ArmoryLocalDataSourceImpl).getDeletedItems(params.userId, 'ammunition');
-      for (final item in deletedAmmo) {
-        try {
-          await remoteDataSource.deleteAmmunition(params.userId, item['id'] as String);
-        } catch (e) {
-          if (e.toString().contains('not-found')) {
-            log.i('ℹ️ Ammunition ${item['id']} not in Firebase, skipping delete');
-          } else {
-            rethrow;
-          }
+      final localFirearmIds = localFirearms.map((e) => e['id'] as String).toSet();
+      for (final firearm in remoteFirearms) {
+        if (!localFirearmIds.contains(firearm.id)) {
+          await localDataSource.addFirearm(params.userId, firearm);
+          await localDataSource.markAsSynced('firearms', params.userId, firearm.id!);
         }
-        await (localDataSource as ArmoryLocalDataSourceImpl).db.then((db) =>
-            db.delete('ammunition', where: 'id = ? AND userId = ?', whereArgs: [item['id'], params.userId])
-        );
       }
-      log.i('🗑️ Deleted ${deletedAmmo.length} ammunition');
 
-      final deletedGear = await (localDataSource as ArmoryLocalDataSourceImpl).getDeletedItems(params.userId, 'gear');
-      for (final item in deletedGear) {
-        try {
-          await remoteDataSource.deleteGear(params.userId, item['id'] as String);
-        } catch (e) {
-          if (e.toString().contains('not-found')) {
-            log.i('ℹ️ Gear ${item['id']} not in Firebase, skipping delete');
-          } else {
-            rethrow;
-          }
+      // Ammunition
+      final remoteAmmo = await remoteDataSource.getAmmunition(params.userId);
+      final remoteAmmoIds = remoteAmmo.map((e) => e.id!).toSet();
+      final localAmmo = await db.query('ammunition', where: 'userId = ?', whereArgs: [params.userId]);
+
+      for (final local in localAmmo) {
+        if (!remoteAmmoIds.contains(local['id']) && local['syncStatus'] == 'synced') {
+          await db.delete('ammunition', where: 'id = ? AND userId = ?', whereArgs: [local['id'], params.userId]);
         }
-        await (localDataSource as ArmoryLocalDataSourceImpl).db.then((db) =>
-            db.delete('gear', where: 'id = ? AND userId = ?', whereArgs: [item['id'], params.userId])
-        );
       }
-      log.i('🗑️ Deleted ${deletedGear.length} gear');
 
-      final deletedTools = await (localDataSource as ArmoryLocalDataSourceImpl).getDeletedItems(params.userId, 'tools');
-      for (final item in deletedTools) {
-        try {
-          await remoteDataSource.deleteTool(params.userId, item['id'] as String);
-        } catch (e) {
-          if (e.toString().contains('not-found')) {
-            log.i('ℹ️ Tool ${item['id']} not in Firebase, skipping delete');
-          } else {
-            rethrow;
-          }
+      final localAmmoIds = localAmmo.map((e) => e['id'] as String).toSet();
+      for (final ammo in remoteAmmo) {
+        if (!localAmmoIds.contains(ammo.id)) {
+          await localDataSource.addAmmunition(params.userId, ammo);
+          await localDataSource.markAsSynced('ammunition', params.userId, ammo.id!);
         }
-        await (localDataSource as ArmoryLocalDataSourceImpl).db.then((db) =>
-            db.delete('tools', where: 'id = ? AND userId = ?', whereArgs: [item['id'], params.userId])
-        );
       }
-      log.i('🗑️ Deleted ${deletedTools.length} tools');
 
-      final deletedLoadouts = await (localDataSource as ArmoryLocalDataSourceImpl).getDeletedItems(params.userId, 'loadouts');
-      for (final item in deletedLoadouts) {
-        try {
-          await remoteDataSource.deleteLoadout(params.userId, item['id'] as String);
-        } catch (e) {
-          if (e.toString().contains('not-found')) {
-            log.i('ℹ️ Loadout ${item['id']} not in Firebase, skipping delete');
-          } else {
-            rethrow;
-          }
+      // Gear
+      final remoteGear = await remoteDataSource.getGear(params.userId);
+      final remoteGearIds = remoteGear.map((e) => e.id!).toSet();
+      final localGear = await db.query('gear', where: 'userId = ?', whereArgs: [params.userId]);
+
+      for (final local in localGear) {
+        if (!remoteGearIds.contains(local['id']) && local['syncStatus'] == 'synced') {
+          await db.delete('gear', where: 'id = ? AND userId = ?', whereArgs: [local['id'], params.userId]);
         }
-        await (localDataSource as ArmoryLocalDataSourceImpl).db.then((db) =>
-            db.delete('loadouts', where: 'id = ? AND userId = ?', whereArgs: [item['id'], params.userId])
-        );
       }
-      log.i('🗑️ Deleted ${deletedLoadouts.length} loadouts');
 
-      final deletedMaintenance = await (localDataSource as ArmoryLocalDataSourceImpl).getDeletedItems(params.userId, 'maintenance');
-      for (final item in deletedMaintenance) {
-        try {
-          await remoteDataSource.deleteMaintenance(params.userId, item['id'] as String);
-        } catch (e) {
-          if (e.toString().contains('not-found')) {
-            log.i('ℹ️ Maintenance ${item['id']} not in Firebase, skipping delete');
-          } else {
-            rethrow;
-          }
+      final localGearIds = localGear.map((e) => e['id'] as String).toSet();
+      for (final gear in remoteGear) {
+        if (!localGearIds.contains(gear.id)) {
+          await localDataSource.addGear(params.userId, gear);
+          await localDataSource.markAsSynced('gear', params.userId, gear.id!);
         }
-        await (localDataSource as ArmoryLocalDataSourceImpl).db.then((db) =>
-            db.delete('maintenance', where: 'id = ? AND userId = ?', whereArgs: [item['id'], params.userId])
-        );
       }
-      log.i('🗑️ Deleted ${deletedMaintenance.length} maintenance');
 
-      // Upload new/modified items
-      final unsyncedFirearms = await localDataSource.getUnsyncedFirearms(params.userId);
-      for (final firearm in unsyncedFirearms) {
-        await remoteDataSource.addFirearm(params.userId, firearm);
-        await localDataSource.markAsSynced('firearms', params.userId, firearm.id!);
+      // Tools
+      final remoteTools = await remoteDataSource.getTools(params.userId);
+      final remoteToolIds = remoteTools.map((e) => e.id!).toSet();
+      final localTools = await db.query('tools', where: 'userId = ?', whereArgs: [params.userId]);
+
+      for (final local in localTools) {
+        if (!remoteToolIds.contains(local['id']) && local['syncStatus'] == 'synced') {
+          await db.delete('tools', where: 'id = ? AND userId = ?', whereArgs: [local['id'], params.userId]);
+        }
       }
-      log.i('✅ Uploaded ${unsyncedFirearms.length} firearms');
 
-      final unsyncedAmmo = await localDataSource.getUnsyncedAmmunition(params.userId);
-      for (final ammo in unsyncedAmmo) {
-        await remoteDataSource.addAmmunition(params.userId, ammo);
-        await localDataSource.markAsSynced('ammunition', params.userId, ammo.id!);
+      final localToolIds = localTools.map((e) => e['id'] as String).toSet();
+      for (final tool in remoteTools) {
+        if (!localToolIds.contains(tool.id)) {
+          await localDataSource.addTool(params.userId, tool);
+          await localDataSource.markAsSynced('tools', params.userId, tool.id!);
+        }
       }
-      log.i('✅ Uploaded ${unsyncedAmmo.length} ammunition');
 
-      final unsyncedGear = await localDataSource.getUnsyncedGear(params.userId);
-      for (final gear in unsyncedGear) {
-        await remoteDataSource.addGear(params.userId, gear);
-        await localDataSource.markAsSynced('gear', params.userId, gear.id!);
+      // Loadouts
+      final remoteLoadouts = await remoteDataSource.getLoadouts(params.userId);
+      final remoteLoadoutIds = remoteLoadouts.map((e) => e.id!).toSet();
+      final localLoadouts = await db.query('loadouts', where: 'userId = ?', whereArgs: [params.userId]);
+
+      for (final local in localLoadouts) {
+        if (!remoteLoadoutIds.contains(local['id']) && local['syncStatus'] == 'synced') {
+          await db.delete('loadouts', where: 'id = ? AND userId = ?', whereArgs: [local['id'], params.userId]);
+        }
       }
-      log.i('✅ Uploaded ${unsyncedGear.length} gear');
 
-      final unsyncedTools = await localDataSource.getUnsyncedTools(params.userId);
-      for (final tool in unsyncedTools) {
-        await remoteDataSource.addTool(params.userId, tool);
-        await localDataSource.markAsSynced('tools', params.userId, tool.id!);
+      final localLoadoutIds = localLoadouts.map((e) => e['id'] as String).toSet();
+      for (final loadout in remoteLoadouts) {
+        if (!localLoadoutIds.contains(loadout.id)) {
+          await localDataSource.addLoadout(params.userId, loadout);
+          await localDataSource.markAsSynced('loadouts', params.userId, loadout.id!);
+        }
       }
-      log.i('✅ Uploaded ${unsyncedTools.length} tools');
 
-      final unsyncedLoadouts = await localDataSource.getUnsyncedLoadouts(params.userId);
-      for (final loadout in unsyncedLoadouts) {
-        await remoteDataSource.addLoadout(params.userId, loadout);
-        await localDataSource.markAsSynced('loadouts', params.userId, loadout.id!);
+      // Maintenance
+      final remoteMaintenance = await remoteDataSource.getMaintenance(params.userId);
+      final remoteMaintenanceIds = remoteMaintenance.map((e) => e.id!).toSet();
+      final localMaintenance = await db.query('maintenance', where: 'userId = ?', whereArgs: [params.userId]);
+
+      for (final local in localMaintenance) {
+        if (!remoteMaintenanceIds.contains(local['id']) && local['syncStatus'] == 'synced') {
+          await db.delete('maintenance', where: 'id = ? AND userId = ?', whereArgs: [local['id'], params.userId]);
+        }
       }
-      log.i('✅ Uploaded ${unsyncedLoadouts.length} loadouts');
 
-      final unsyncedMaintenance = await localDataSource.getUnsyncedMaintenance(params.userId);
-      for (final maintenance in unsyncedMaintenance) {
-        await remoteDataSource.addMaintenance(params.userId, maintenance);
-        await localDataSource.markAsSynced('maintenance', params.userId, maintenance.id!);
+      final localMaintenanceIds = localMaintenance.map((e) => e['id'] as String).toSet();
+      for (final maintenance in remoteMaintenance) {
+        if (!localMaintenanceIds.contains(maintenance.id)) {
+          await localDataSource.addMaintenance(params.userId, maintenance);
+          await localDataSource.markAsSynced('maintenance', params.userId, maintenance.id!);
+        }
       }
-      log.i('✅ Uploaded ${unsyncedMaintenance.length} maintenance');
 
-      log.i('🎉 Upload sync completed');
+      log.i('✅ Download: F:${remoteFirearms.length} A:${remoteAmmo.length} G:${remoteGear.length} T:${remoteTools.length} L:${remoteLoadouts.length} M:${remoteMaintenance.length}');
       return const Right(null);
     } catch (e) {
-      log.e('❌ Upload sync failed: $e');
-      return Left(FileFailure('Upload sync failed: $e'));
+      log.e('❌ Download failed: $e');
+      return Left(FileFailure('Download failed: $e'));
     }
   }
 }

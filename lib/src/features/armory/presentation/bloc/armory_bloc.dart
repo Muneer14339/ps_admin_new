@@ -113,60 +113,60 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
   void _onUpdateFirearm(UpdateFirearmEvent event, Emitter<ArmoryState> emit) async {
 
     emit(const ArmoryLoadingAction());
-    final result = await addFirearmUseCase(AddFirearmParams(userId: userIdNew, firearm: event.firearm));
+    final result = await addFirearmUseCase(AddFirearmParams(userId: event.userId, firearm: event.firearm));
     result.fold(
           (failure) => emit(ArmoryError(message: failure.toString())),
           (_) async {
         emit(const ArmoryActionSuccess(message: 'Firearm updated successfully!'));
-        add(LoadAllDataEvent(userId: userIdNew));
+        add(LoadAllDataEvent(userId: event.userId));
       },
     );
   }
 
   void _onUpdateAmmunition(UpdateAmmunitionEvent event, Emitter<ArmoryState> emit) async {
     emit(const ArmoryLoadingAction());
-    final result = await addAmmunitionUseCase(AddAmmunitionParams(userId: userIdNew, ammunition: event.ammunition));
+    final result = await addAmmunitionUseCase(AddAmmunitionParams(userId: event.userId, ammunition: event.ammunition));
     result.fold(
           (failure) => emit(ArmoryError(message: failure.toString())),
           (_) {
         emit(const ArmoryActionSuccess(message: 'Ammunition updated successfully!'));
-        add(LoadAllDataEvent(userId: userIdNew));
+        add(LoadAllDataEvent(userId: event.userId));
       },
     );
   }
 
   void _onUpdateGear(UpdateGearEvent event, Emitter<ArmoryState> emit) async {
     emit(const ArmoryLoadingAction());
-    final result = await addGearUseCase(AddGearParams(userId: userIdNew, gear: event.gear));
+    final result = await addGearUseCase(AddGearParams(userId: event.userId, gear: event.gear));
     result.fold(
           (failure) => emit(ArmoryError(message: failure.toString())),
           (_) {
         emit(const ArmoryActionSuccess(message: 'Gear updated successfully!'));
-        add(LoadAllDataEvent(userId: userIdNew));
+        add(LoadAllDataEvent(userId: event.userId));
       },
     );
   }
 
   void _onUpdateTool(UpdateToolEvent event, Emitter<ArmoryState> emit) async {
     emit(const ArmoryLoadingAction());
-    final result = await addToolUseCase(AddToolParams(userId: userIdNew, tool: event.tool));
+    final result = await addToolUseCase(AddToolParams(userId: event.userId, tool: event.tool));
     result.fold(
           (failure) => emit(ArmoryError(message: failure.toString())),
           (_) {
         emit(const ArmoryActionSuccess(message: 'Tool updated successfully!'));
-        add(LoadAllDataEvent(userId: userIdNew));
+        add(LoadAllDataEvent(userId: event.userId));
       },
     );
   }
 
   void _onUpdateLoadout(UpdateLoadoutEvent event, Emitter<ArmoryState> emit) async {
     emit(const ArmoryLoadingAction());
-    final result = await addLoadoutUseCase(AddLoadoutParams(userId: userIdNew, loadout: event.loadout));
+    final result = await addLoadoutUseCase(AddLoadoutParams(userId: event.userId, loadout: event.loadout));
     result.fold(
           (failure) => emit(ArmoryError(message: failure.toString())),
           (_) {
         emit(const ArmoryActionSuccess(message: 'Loadout updated successfully!'));
-        add(LoadAllDataEvent(userId: userIdNew));
+        add(LoadAllDataEvent(userId: event.userId));
       },
     );
   }
@@ -177,7 +177,7 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
     try {
       if (event.dependentLoadoutIds.isNotEmpty) {
         final loadoutResult = await batchDeleteLoadoutsUseCase(
-            BatchDeleteLoadoutsParams(userId: userIdNew, loadoutIds: event.dependentLoadoutIds)
+            BatchDeleteLoadoutsParams(userId: event.userId, loadoutIds: event.dependentLoadoutIds)
         );
         if (loadoutResult.isLeft()) {
           loadoutResult.fold(
@@ -190,7 +190,7 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
 
       if (event.dependentAmmunitionIds.isNotEmpty) {
         final ammoResult = await batchDeleteAmmunitionUseCase(
-            BatchDeleteAmmunitionParams(userId: userIdNew, ammunitionIds: event.dependentAmmunitionIds)
+            BatchDeleteAmmunitionParams(userId: event.userId, ammunitionIds: event.dependentAmmunitionIds)
         );
         if (ammoResult.isLeft()) {
           ammoResult.fold(
@@ -203,13 +203,13 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
 
       await Future.delayed(const Duration(milliseconds: 500));
 
-      final result = await addFirearmUseCase(AddFirearmParams(userId: userIdNew, firearm: event.firearm));
+      final result = await addFirearmUseCase(AddFirearmParams(userId: event.userId, firearm: event.firearm));
       await result.fold(
             (failure) async => emit(ArmoryError(message: failure.toString())),
             (_) async {
           await Future.delayed(const Duration(milliseconds: 500));
           emit(const ArmoryActionSuccess(message: 'Firearm updated and dependencies removed!'));
-          add(LoadAllDataEvent(userId: userIdNew));
+          add(LoadAllDataEvent(userId: event.userId));
         },
       );
     } catch (e) {
@@ -220,13 +220,13 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
   void _onUpdateMaintenance(UpdateMaintenanceEvent event, Emitter<ArmoryState> emit) async {
     emit(const ArmoryLoadingAction());
     final result = await addMaintenanceUseCase(
-        AddMaintenanceParams(userId: userIdNew, maintenance: event.maintenance)
+        AddMaintenanceParams(userId: event.userId, maintenance: event.maintenance)
     );
     result.fold(
           (failure) => emit(ArmoryError(message: failure.toString())),
           (_) {
         emit(const ArmoryActionSuccess(message: 'Maintenance updated successfully!'));
-        add(LoadAllDataEvent(userId: userIdNew));
+        add(LoadAllDataEvent(userId: event.userId));
       },
     );
   }
@@ -240,7 +240,7 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
       // Delete loadouts with error checking
       if (event.dependentLoadoutIds.isNotEmpty) {
         final loadoutResult = await batchDeleteLoadoutsUseCase(
-            BatchDeleteLoadoutsParams(userId: userIdNew, loadoutIds: event.dependentLoadoutIds)
+            BatchDeleteLoadoutsParams(userId: event.userId, loadoutIds: event.dependentLoadoutIds)
         );
 
         if (loadoutResult.isLeft()) {
@@ -256,7 +256,7 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
       // Delete ammunition with error checking
       if (event.dependentAmmunitionIds.isNotEmpty) {
         final ammoResult = await batchDeleteAmmunitionUseCase(
-            BatchDeleteAmmunitionParams(userId: userIdNew, ammunitionIds: event.dependentAmmunitionIds)
+            BatchDeleteAmmunitionParams(userId: event.userId, ammunitionIds: event.dependentAmmunitionIds)
         );
 
         if (ammoResult.isLeft()) {
@@ -273,7 +273,7 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
 
       // Delete firearm
       final result = await deleteFirearmUseCase(
-        DeleteFirearmParams(userId: userIdNew, firearm: event.firearm),
+        DeleteFirearmParams(userId: event.userId, firearm: event.firearm),
       );
 
       await result.fold(
@@ -282,7 +282,7 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
           print('✅ Firearm deleted, reloading data...');
           await Future.delayed(const Duration(milliseconds: 500));
           emit(const ArmoryActionSuccess(message: 'Firearm and dependencies deleted!'));
-          add(LoadAllDataEvent(userId: userIdNew));
+          add(LoadAllDataEvent(userId: event.userId));
         },
       );
     } catch (e) {
@@ -298,7 +298,7 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
       // Delete loadouts with error checking
       if (event.dependentLoadoutIds.isNotEmpty) {
         final loadoutResult = await batchDeleteLoadoutsUseCase(
-            BatchDeleteLoadoutsParams(userId: userIdNew, loadoutIds: event.dependentLoadoutIds)
+            BatchDeleteLoadoutsParams(userId: event.userId, loadoutIds: event.dependentLoadoutIds)
         );
 
         if (loadoutResult.isLeft()) {
@@ -315,7 +315,7 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
 
       // Delete ammunition
       final result = await deleteAmmunitionUseCase(
-        DeleteAmmunitionParams(userId: userIdNew, ammunition: event.ammunition),
+        DeleteAmmunitionParams(userId: event.userId, ammunition: event.ammunition),
       );
 
       await result.fold(
@@ -324,7 +324,7 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
           print('✅ Ammunition deleted, reloading data...');
           await Future.delayed(const Duration(milliseconds: 500));
           emit(const ArmoryActionSuccess(message: 'Ammunition and dependencies deleted!'));
-          add(LoadAllDataEvent(userId: userIdNew));
+          add(LoadAllDataEvent(userId: event.userId));
         },
       );
     } catch (e) {
@@ -336,13 +336,13 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
   void _onSyncLocalToRemote(SyncLocalToRemoteEvent event, Emitter<ArmoryState> emit) async {
     emit(const SyncInProgress(message: 'Uploading unsynced data...'));
 
-    final result = await syncLocalToRemoteUseCase(UserIdParams(userId: userIdNew));
+    final result = await syncLocalToRemoteUseCase(UserIdParams(userId: event.userId));
 
     result.fold(
           (failure) => emit(ArmoryError(message: failure.toString())),
           (_) {
         emit(const SyncCompleted(message: 'Upload completed successfully!'));
-        add(LoadAllDataEvent(userId: userIdNew));
+        add(LoadAllDataEvent(userId: event.userId));
       },
     );
   }
@@ -350,13 +350,13 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
   void _onSyncRemoteToLocal(SyncRemoteToLocalEvent event, Emitter<ArmoryState> emit) async {
     emit(const SyncInProgress(message: 'Downloading new data...'));
 
-    final result = await syncRemoteToLocalUseCase(UserIdParams(userId: userIdNew));
+    final result = await syncRemoteToLocalUseCase(UserIdParams(userId: event.userId));
 
     result.fold(
           (failure) => emit(ArmoryError(message: failure.toString())),
           (_) {
         emit(const SyncCompleted(message: 'Download completed successfully!'));
-        add(LoadAllDataEvent(userId: userIdNew));
+        add(LoadAllDataEvent(userId: event.userId));
       },
     );
   }
@@ -365,12 +365,12 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
     emit(const ArmoryLoading());
 
     final results = await Future.wait([
-      getFirearmsUseCase(UserIdParams(userId: userIdNew)),
-      getAmmunitionUseCase(UserIdParams(userId: userIdNew)),
-      getGearUseCase(UserIdParams(userId: userIdNew)),
-      getToolsUseCase(UserIdParams(userId: userIdNew)),
-      getLoadoutsUseCase(UserIdParams(userId: userIdNew)),
-      getMaintenanceUseCase(UserIdParams(userId: userIdNew)),
+      getFirearmsUseCase(UserIdParams(userId: event.userId)),  // ✅ USE event.userId
+      getAmmunitionUseCase(UserIdParams(userId: event.userId)),
+      getGearUseCase(UserIdParams(userId: event.userId)),
+      getToolsUseCase(UserIdParams(userId: event.userId)),
+      getLoadoutsUseCase(UserIdParams(userId: event.userId)),
+      getMaintenanceUseCase(UserIdParams(userId: event.userId)),
     ]);
 
     final firearms = results[0].fold((l) => <ArmoryFirearm>[], (r) => r);
@@ -394,14 +394,14 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
     emit(const ArmoryLoadingAction());
 
     final result = await addFirearmUseCase(
-      AddFirearmParams(userId: userIdNew, firearm: event.firearm),
+      AddFirearmParams(userId: event.userId, firearm: event.firearm),
     );
 
     result.fold(
           (failure) => emit(ArmoryError(message: failure.toString())),
           (_) async {
         emit(const ArmoryActionSuccess(message: 'Firearm added successfully!'));
-        add(LoadAllDataEvent(userId: userIdNew));
+        add(LoadAllDataEvent(userId: event.userId));
       },
     );
   }
@@ -410,14 +410,14 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
     emit(const ArmoryLoadingAction());
 
     final result = await addAmmunitionUseCase(
-      AddAmmunitionParams(userId: userIdNew, ammunition: event.ammunition),
+      AddAmmunitionParams(userId: event.userId, ammunition: event.ammunition),
     );
 
     result.fold(
           (failure) => emit(ArmoryError(message: failure.toString())),
           (_) {
         emit(const ArmoryActionSuccess(message: 'Ammunition added successfully!'));
-        add(LoadAllDataEvent(userId: userIdNew));
+        add(LoadAllDataEvent(userId: event.userId));
       },
     );
   }
@@ -426,14 +426,14 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
     emit(const ArmoryLoadingAction());
 
     final result = await addGearUseCase(
-      AddGearParams(userId: userIdNew, gear: event.gear),
+      AddGearParams(userId: event.userId, gear: event.gear),
     );
 
     result.fold(
           (failure) => emit(ArmoryError(message: failure.toString())),
           (_) {
         emit(const ArmoryActionSuccess(message: 'Gear added successfully!'));
-        add(LoadAllDataEvent(userId: userIdNew));
+        add(LoadAllDataEvent(userId: event.userId));
       },
     );
   }
@@ -442,14 +442,14 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
     emit(const ArmoryLoadingAction());
 
     final result = await addToolUseCase(
-      AddToolParams(userId: userIdNew, tool: event.tool),
+      AddToolParams(userId: event.userId, tool: event.tool),
     );
 
     result.fold(
           (failure) => emit(ArmoryError(message: failure.toString())),
           (_) {
         emit(const ArmoryActionSuccess(message: 'Tool added successfully!'));
-        add(LoadAllDataEvent(userId: userIdNew));
+        add(LoadAllDataEvent(userId: event.userId));
       },
     );
   }
@@ -458,14 +458,14 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
     emit(const ArmoryLoadingAction());
 
     final result = await addLoadoutUseCase(
-      AddLoadoutParams(userId: userIdNew, loadout: event.loadout),
+      AddLoadoutParams(userId: event.userId, loadout: event.loadout),
     );
 
     result.fold(
           (failure) => emit(ArmoryError(message: failure.toString())),
           (_) {
         emit(const ArmoryActionSuccess(message: 'Loadout added successfully!'));
-        add(LoadAllDataEvent(userId: userIdNew));
+        add(LoadAllDataEvent(userId: event.userId));
       },
     );
   }
@@ -474,14 +474,14 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
     emit(const ArmoryLoadingAction());
 
     final result = await addMaintenanceUseCase(
-      AddMaintenanceParams(userId: userIdNew, maintenance: event.maintenance),
+      AddMaintenanceParams(userId: event.userId, maintenance: event.maintenance),
     );
 
     result.fold(
           (failure) => emit(ArmoryError(message: failure.toString())),
           (_) {
         emit(const ArmoryActionSuccess(message: 'Maintenance log added successfully!'));
-        add(LoadAllDataEvent(userId: userIdNew));
+        add(LoadAllDataEvent(userId: event.userId));
       },
     );
   }
@@ -490,14 +490,14 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
     emit(const ArmoryLoadingAction());
 
     final result = await deleteFirearmUseCase(
-      DeleteFirearmParams(userId: userIdNew, firearm: event.firearm),
+      DeleteFirearmParams(userId: event.userId, firearm: event.firearm),
     );
 
     result.fold(
           (failure) => emit(ArmoryError(message: failure.toString())),
           (_) {
         emit(const ArmoryActionSuccess(message: 'Firearm deleted successfully!'));
-        add(LoadAllDataEvent(userId: userIdNew));
+        add(LoadAllDataEvent(userId: event.userId));
       },
     );
   }
@@ -506,14 +506,14 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
     emit(const ArmoryLoadingAction());
 
     final result = await deleteAmmunitionUseCase(
-      DeleteAmmunitionParams(userId: userIdNew, ammunition: event.ammunition),
+      DeleteAmmunitionParams(userId: event.userId, ammunition: event.ammunition),
     );
 
     result.fold(
           (failure) => emit(ArmoryError(message: failure.toString())),
           (_) {
         emit(const ArmoryActionSuccess(message: 'Ammunition deleted successfully!'));
-        add(LoadAllDataEvent(userId: userIdNew));
+        add(LoadAllDataEvent(userId: event.userId));
       },
     );
   }
@@ -522,14 +522,14 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
     emit(const ArmoryLoadingAction());
 
     final result = await deleteGearUseCase(
-      DeleteGearParams(userId: userIdNew, gear: event.gear),
+      DeleteGearParams(userId: event.userId, gear: event.gear),
     );
 
     result.fold(
           (failure) => emit(ArmoryError(message: failure.toString())),
           (_) {
         emit(const ArmoryActionSuccess(message: 'Gear deleted successfully!'));
-        add(LoadAllDataEvent(userId: userIdNew));
+        add(LoadAllDataEvent(userId: event.userId));
       },
     );
   }
@@ -538,14 +538,14 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
     emit(const ArmoryLoadingAction());
 
     final result = await deleteToolUseCase(
-      DeleteToolParams(userId: userIdNew, tool: event.tool),
+      DeleteToolParams(userId: event.userId, tool: event.tool),
     );
 
     result.fold(
           (failure) => emit(ArmoryError(message: failure.toString())),
           (_) {
         emit(const ArmoryActionSuccess(message: 'Tool deleted successfully!'));
-        add(LoadAllDataEvent(userId: userIdNew));
+        add(LoadAllDataEvent(userId: event.userId));
       },
     );
   }
@@ -554,14 +554,14 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
     emit(const ArmoryLoadingAction());
 
     final result = await deleteMaintenanceUseCase(
-      DeleteMaintenanceParams(userId: userIdNew, maintenance: event.maintenance),
+      DeleteMaintenanceParams(userId: event.userId, maintenance: event.maintenance),
     );
 
     result.fold(
           (failure) => emit(ArmoryError(message: failure.toString())),
           (_) {
         emit(const ArmoryActionSuccess(message: 'Maintenance deleted successfully!'));
-        add(LoadAllDataEvent(userId: userIdNew));
+        add(LoadAllDataEvent(userId: event.userId));
       },
     );
   }
@@ -570,14 +570,14 @@ class ArmoryBloc extends Bloc<ArmoryEvent, ArmoryState> {
     emit(const ArmoryLoadingAction());
 
     final result = await deleteLoadoutUseCase(
-      DeleteLoadoutParams(userId: userIdNew, loadout: event.loadout),
+      DeleteLoadoutParams(userId: event.userId, loadout: event.loadout),
     );
 
     result.fold(
           (failure) => emit(ArmoryError(message: failure.toString())),
           (_) {
         emit(const ArmoryActionSuccess(message: 'Loadout deleted successfully!'));
-        add(LoadAllDataEvent(userId: userIdNew));
+        add(LoadAllDataEvent(userId: event.userId));
       },
     );
   }

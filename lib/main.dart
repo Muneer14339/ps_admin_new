@@ -220,57 +220,43 @@ class _DataSyncWrapperState extends State<DataSyncWrapper> {
     _initializeData();
   }
 
+  // lib/main.dart - Update DataSyncWrapper _initializeData method
   Future<void> _initializeData() async {
-    print("object_widget_userId--${widget.userId}");
-    context
-        .read<ArmoryBloc>()
-        .add(SyncLocalToRemoteEvent(userId: widget.userId));
+    context.read<ArmoryBloc>().add(SyncLocalToRemoteEvent(userId: widget.userId));
+
     try {
       final localDataSource = locator<ArmoryLocalDataSource>();
       final isEmpty = await localDataSource.isDatabaseEmpty();
-      // 1. Sync remote armory data to local
 
       if (isEmpty) {
-        log.i('🔄 Database empty, starting sync...');
+        log.i('🔄 Init sync...');
         final syncUseCase = locator<InitialDataSyncUseCase>();
         final result = await syncUseCase(UserIdParams(userId: widget.userId));
 
         await result.fold(
               (failure) async {
-            log.e('❌ Sync failed: ${failure}');
-            if (mounted) {
-              setState(() => _syncCompleted = false);
-            }
+            log.e('❌ Init failed: $failure');
+            if (mounted) setState(() => _syncCompleted = false);
           },
               (_) async {
-            log.i('✅ Sync completed successfully');
-            if (mounted) {
-              setState(() => _syncCompleted = true);
-            }
+            log.i('✅ Init done');
+            if (mounted) setState(() => _syncCompleted = true);
           },
         );
       } else {
-        log.i('✅ Database has data, skipping sync');
-        if (mounted) {
-          setState(() => _syncCompleted = true);
-        }
+        log.i('✅ Has data');
+        if (mounted) setState(() => _syncCompleted = true);
       }
 
-      // Sync data when user opens app (with internet check)
-      // 1. Sync remote armory data to local
-
-
-      // 2. Sync local sessions to remote
       final sessionSyncService = locator<SessionSyncService>();
       sessionSyncService.syncSessionsToRemote(widget.userId);
+
       if (mounted) {
         context.read<ArmoryBloc>().add(SyncRemoteToLocalEvent(userId: widget.userId));
       }
     } catch (e) {
-      log.e('❌ Init error: $e');
-      if (mounted) {
-        setState(() => _syncCompleted = false);
-      }
+      log.e('❌ Error: $e');
+      if (mounted) setState(() => _syncCompleted = false);
     }
   }
 
