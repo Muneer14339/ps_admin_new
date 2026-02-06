@@ -160,7 +160,7 @@ class _HistoryTabWidgetState extends State<HistoryTabWidget> {
                             crossAxisCount: isMobile ? 1 : 2,
                             crossAxisSpacing: 16,
                             mainAxisSpacing: 16,
-                            childAspectRatio: 3,
+                            childAspectRatio: isMobile ? 3 :4,
                           ),
                           itemCount: state.session.length > 3 ? 3 : state.session.length,
                           itemBuilder: (context, index) {

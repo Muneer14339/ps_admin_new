@@ -249,7 +249,7 @@ class _DataSyncWrapperState extends State<DataSyncWrapper> {
       }
 
       final sessionSyncService = locator<SessionSyncService>();
-      sessionSyncService.syncSessionsToRemote(widget.userId);
+      await sessionSyncService.syncSessionsToRemote(widget.userId);
 
       if (mounted) {
         context.read<ArmoryBloc>().add(SyncRemoteToLocalEvent(userId: widget.userId));
