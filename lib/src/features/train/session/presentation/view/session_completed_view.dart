@@ -242,6 +242,7 @@ class SessionCompletedView extends StatelessWidget {
                         loadoutId: loadoutArm?.id,
                         firearmId: armoryFirearmA?.id,
                         ammunitionId: armoryAmmunitionA?.id,
+                        sessionName: model.sessionName,
                         saveStageEntity: SessionSaveStageEntity(
                           distance: model.stageEntity?.distance,
                           drill: model.stageEntity?.drill,
@@ -390,6 +391,7 @@ class SessionCompletedView extends StatelessWidget {
                               loadoutId: loadoutArm?.id,
                               firearmId: armoryFirearmA?.id,
                               ammunitionId: armoryAmmunitionA?.id,
+                              sessionName: model.sessionName,
                               saveStageEntity: SessionSaveStageEntity(
                                 distance:
                                     state.sessionModel.stageEntity?.distance,

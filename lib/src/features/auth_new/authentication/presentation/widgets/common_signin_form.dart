@@ -48,28 +48,18 @@ class _CommonSignInFormState extends State<CommonSignInForm> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (widget.onForgotPassword != null)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Password', style: AppTheme.labelMedium(context)),
-                    TextButton(
-                      onPressed: widget.onForgotPassword,
-                      style: TextButton.styleFrom(
-                        foregroundColor: AppTheme.primary(context),
-                        padding: EdgeInsets.zero,
-                        minimumSize: Size.zero,
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
-                      child: const Text('Forgot?'),
-                    ),
-                  ],
-                )
-              else
-                Text('Password', style: AppTheme.labelMedium(context)),
-              const SizedBox(height: 6),
+              // if (widget.onForgotPassword != null)
+              //   Row(
+              //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //     children: [
+              //       Text('Password', style: AppTheme.labelMedium(context)),
+              //     ],
+              //   )
+              // else
+              //   Text('Password', style: AppTheme.labelMedium(context)),
+              // const SizedBox(height: 6),
               CommonAuthInputField(
-                label: '',
+                label: 'Password',
                 hint: 'Enter your password',
                 controller: widget.passwordController,
                 obscureText: _obscurePassword,
@@ -85,6 +75,20 @@ class _CommonSignInFormState extends State<CommonSignInForm> {
                   if (value?.trim().isEmpty ?? true) return 'Password is required';
                   return null;
                 },
+              ),
+              if (widget.onForgotPassword != null)
+                Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: widget.onForgotPassword,
+                  style: TextButton.styleFrom(
+                    foregroundColor: AppTheme.primary(context),
+                    padding: EdgeInsets.zero,
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: const Text('Forgot?'),
+                ),
               ),
             ],
           ),

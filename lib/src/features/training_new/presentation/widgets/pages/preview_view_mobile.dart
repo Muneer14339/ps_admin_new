@@ -213,6 +213,7 @@ class SessionPreviewViewMobile extends StatelessWidget {
           isCadOrOpen: state.session.isCadOrRegular,
           sessionId: sessionIdFun(),
           stageEntity: stageEntity.copyWith(),
+          sessionName: context.read<TrainingBloc>().titleCtrl.text,
         ),
       ));
       Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(builder: (_) => UsbCameraPage()));
@@ -236,6 +237,7 @@ class SessionPreviewViewMobile extends StatelessWidget {
             isCadOrOpen: state.session.isCadOrRegular,
             sessionId: sessionIdFun(),
             stageEntity: stageEntity,
+            sessionName: context.read<TrainingBloc>().titleCtrl.text,
           ),
         ));
 

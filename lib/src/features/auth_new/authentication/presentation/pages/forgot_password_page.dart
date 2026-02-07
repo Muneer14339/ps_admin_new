@@ -5,6 +5,7 @@ import 'package:pa_sreens/src/core/theme/color/app_colors_new.dart';
 import '../../../../../core/theme/theme_data/theme_data.dart';
 import '../../../../../core/widgets/toast.dart';
 import '../bloc/auth_bloc.dart';
+import '../widgets/header_with_back_button.dart';
 import 'email_verification_page.dart';
 
 class ForgotPasswordPage extends StatelessWidget {
@@ -124,7 +125,9 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
       ),
       child: Column(
         children: [
-          Text('Reset Password', style: AppTheme.headingMedium(context)),
+          HeaderWithBackButton(
+            child: Text('Reset Password', style: AppTheme.headingMedium(context)),
+          ),
           const SizedBox(height: 4),
           Text(
             'Enter your email to receive a password reset OTP',

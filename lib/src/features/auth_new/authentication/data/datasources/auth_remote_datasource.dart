@@ -49,6 +49,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final response = await _dioClient.post(
         ApiEndpoints.signup,
         data: request.toJson(),
+        queryParameters: {'source': 'app'},
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -126,6 +127,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final response = await _dioClient.post(
         ApiEndpoints.login,
         data: request.toJson(),
+        queryParameters: {'source': 'app'},
       );
 
       if (response.statusCode == 200) {

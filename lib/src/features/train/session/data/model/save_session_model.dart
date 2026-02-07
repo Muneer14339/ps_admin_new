@@ -19,6 +19,7 @@ class SaveSessionModel {
   String? loadoutId;
   String? firearmId;
   String? ammunitionId;
+  String? sessionName;
 
   SaveSessionModel({
     this.userId,
@@ -31,6 +32,7 @@ class SaveSessionModel {
     this.loadoutId,
     this.firearmId,
     this.ammunitionId,
+    this.sessionName
   });
 
   SaveSessionModel copyWith({
@@ -44,6 +46,7 @@ class SaveSessionModel {
     String? loadoutId,
     String? firearmId,
     String? ammunitionId,
+    String? sessionName
   }) =>
       SaveSessionModel(
         playedShots: playedShots ?? this.playedShots,
@@ -56,6 +59,7 @@ class SaveSessionModel {
         loadoutId: loadoutId ?? this.loadoutId,
         firearmId: firearmId ?? this.firearmId,
         ammunitionId: ammunitionId ?? this.ammunitionId,
+        sessionName: sessionName ?? this.sessionName
       );
 
   factory SaveSessionModel.fromJson(Map<String, dynamic> json) =>
@@ -75,6 +79,7 @@ class SaveSessionModel {
         loadoutId: json["loadout_id"],
         firearmId: json["firearm_id"],
         ammunitionId: json["ammunition_id"],
+        sessionName: json["sessionName"]
       );
 
   Map<String, dynamic> toJson() => {
@@ -90,7 +95,8 @@ class SaveSessionModel {
         "loadout_id": loadoutId,
         "firearm_id": firearmId,
         "ammunition_id": ammunitionId,
-      };
+    "sessionName" : sessionName,
+  };
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - -- ShootModel

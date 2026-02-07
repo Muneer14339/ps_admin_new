@@ -367,6 +367,7 @@ class _SessionPreviewContent extends StatelessWidget {
   }
 
   Future<void> _startSession(BuildContext context) async {
+
     print("stageEntity_distance =====3");
     StageEntity stageEntity = await StageDbHelper()
         .getStageForUser(locator<LocalStorageService>().userIdString);
@@ -385,6 +386,7 @@ class _SessionPreviewContent extends StatelessWidget {
             cadenceValues: state.session.cadenceValues,
             isCadOrOpen: state.session.isCadOrRegular,
             sessionId: sessionIdFun(),
+            sessionName: context.read<TrainingBloc>().titleCtrl.text,
             stageEntity: stageEntity.copyWith()),
       ));
 
@@ -424,6 +426,7 @@ class _SessionPreviewContent extends StatelessWidget {
                     cadenceValues: state.session.cadenceValues,
                     isCadOrOpen: state.session.isCadOrRegular,
                     sessionId: sessionIdFun(),
+                    sessionName: context.read<TrainingBloc>().titleCtrl.text,
                     stageEntity: stageEntity),
               ));
 

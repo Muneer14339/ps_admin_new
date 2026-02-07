@@ -8,6 +8,7 @@ import 'package:pa_sreens/src/features/auth_new/authentication/presentation/widg
 import 'package:pa_sreens/src/features/auth_new/authentication/presentation/widgets/common_signup_form.dart';
 import '../../../../../core/theme/theme_data/theme_data.dart';
 import '../bloc/auth_bloc.dart';
+import '../widgets/header_with_back_button.dart';
 import 'email_verification_page.dart';
 import 'forgot_password_page.dart';
 
@@ -58,18 +59,20 @@ class _PulseIdAuthPageState extends State<PulseIdAuthPage> with SingleTickerProv
                       padding: AppTheme.paddingLarge,
                       child: Column(
                         children: [
-                          Container(
-                            width: logoSize,
-                            height: logoSize,
-                            padding: EdgeInsets.all(logoSize * 0.2),
-                            decoration: BoxDecoration(
-                              color: AppTheme.primary(context),
-                              borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
-                            ),
-                            child: Icon(
-                              Icons.access_time_rounded,
-                              color: AppTheme.surface(context),
-                              size: iconSize,
+                          HeaderWithBackButton(
+                            child: Container(
+                              width: logoSize,
+                              height: logoSize,
+                              padding: EdgeInsets.all(logoSize * 0.2),
+                              decoration: BoxDecoration(
+                                color: AppTheme.primary(context),
+                                borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+                              ),
+                              child: Icon(
+                                Icons.access_time_rounded,
+                                color: AppTheme.surface(context),
+                                size: iconSize,
+                              ),
                             ),
                           ),
                           const SizedBox(height: AppTheme.spacingMedium),

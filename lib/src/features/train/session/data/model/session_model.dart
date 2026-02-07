@@ -29,6 +29,7 @@ class SessionModel {
   ShootModel? shootModel;
   List<ShootModel>? listShots;
   StageEntity? stageEntity;
+  String? sessionName;
 
   SessionModel({
     this.playedShoots,
@@ -56,6 +57,7 @@ class SessionModel {
     this.sessionCountDown,
     this.cadenceValues,
     this.isCadOrOpen,
+    this.sessionName,
   });
 
   // The copyWith method
@@ -85,6 +87,7 @@ class SessionModel {
     ShootModel? shootModel,
     List<ShootModel>? listShots,
     StageEntity? stageEntity,
+    String? sessionName
   }) {
     return SessionModel(
       playedShoots: playedShoots ?? this.playedShoots,
@@ -113,6 +116,7 @@ class SessionModel {
       cadenceValues: cadenceValues ?? this.cadenceValues,
       isCadOrOpen: isCadOrOpen ?? this.isCadOrOpen,
       stageEntity: stageEntity ?? this.stageEntity,
+      sessionName: sessionName?? this.sessionName
     );
   }
 }

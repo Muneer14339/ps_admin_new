@@ -166,7 +166,7 @@ class _MainAppViewState extends State<MainAppView> {
           top: false,
           child: _buildBottomNavigation(),
         ),
-        appBar: DeviceConfig.isMobile(context) && _currentIndex != 2 ? _buildAppBar() : null,
+        appBar: DeviceConfig.isMobile(context) && _currentIndex != 2 && _currentIndex != 3 ? _buildAppBar() : null,
 
       ),
     ));
