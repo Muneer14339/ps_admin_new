@@ -45,53 +45,39 @@ class _CommonSignInFormState extends State<CommonSignInForm> {
             },
           ),
           const SizedBox(height: AppTheme.spacingLarge),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // if (widget.onForgotPassword != null)
-              //   Row(
-              //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //     children: [
-              //       Text('Password', style: AppTheme.labelMedium(context)),
-              //     ],
-              //   )
-              // else
-              //   Text('Password', style: AppTheme.labelMedium(context)),
-              // const SizedBox(height: 6),
-              CommonAuthInputField(
-                label: 'Password',
-                hint: 'Enter your password',
-                controller: widget.passwordController,
-                obscureText: _obscurePassword,
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                    color: AppTheme.textSecondary(context),
-                    size: AppTheme.iconMedium,
-                  ),
-                  onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                ),
-                validator: (value) {
-                  if (value?.trim().isEmpty ?? true) return 'Password is required';
-                  return null;
-                },
+          CommonAuthInputField(
+            label: 'Password',
+            hint: 'Enter your password',
+            controller: widget.passwordController,
+            obscureText: _obscurePassword,
+            suffixIcon: IconButton(
+              icon: Icon(
+                _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                color: AppTheme.textSecondary(context),
+                size: AppTheme.iconMedium,
               ),
-              if (widget.onForgotPassword != null)
-                Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: widget.onForgotPassword,
-                  style: TextButton.styleFrom(
-                    foregroundColor: AppTheme.primary(context),
-                    padding: EdgeInsets.zero,
-                    minimumSize: Size.zero,
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  ),
-                  child: const Text('Forgot?'),
-                ),
-              ),
-            ],
+              onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+            ),
+            validator: (value) {
+              if (value?.trim().isEmpty ?? true) return 'Password is required';
+              return null;
+            },
           ),
+          const SizedBox(height: AppTheme.spacingLarge),
+          if (widget.onForgotPassword != null)
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: widget.onForgotPassword,
+                style: TextButton.styleFrom(
+                  foregroundColor: AppTheme.primary(context),
+                  padding: EdgeInsets.zero,
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: const Text('Forgot Password?'),
+              ),
+            ),
           const SizedBox(height: AppTheme.spacingXXLarge),
           CommonAuthButton(
             text: 'Sign In',

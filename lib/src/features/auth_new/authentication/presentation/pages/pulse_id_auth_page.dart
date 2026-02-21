@@ -1,4 +1,6 @@
 // lib/src/features/auth_new/authentication/presentation/pages/pulse_id_auth_page.dart
+import 'dart:ui';
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -136,27 +138,46 @@ class _PulseIdAuthPageState extends State<PulseIdAuthPage> with SingleTickerProv
                         ],
                       ),
                     ),
-                    AnimatedBuilder(
-                      animation: _tabController,
-                      builder: (context, child) {
-                        final currentIndex = _tabController.index;
-                        final tabHeight = isMobile
-                            ? (currentIndex == 0 ? screenHeight * 0.4 : screenHeight * 0.6)
-                            : screenHeight * 0.5;
+              AnimatedBuilder(
+              animation: _tabController.animation!,
+                builder: (context, child) {
+                  final t = _tabController.animation!.value.clamp(0.0, 1.0);
 
-                        return SizedBox(
-                          height: tabHeight,
-                          child: TabBarView(
-                            controller: _tabController,
-                            children: [
-                              _SignInTab(isMobile: isMobile),
-                              _CreateAccountTab(isMobile: isMobile),
-                            ],
-                          ),
-                        );
-                      },
+                  final tabHeight = isMobile
+                      ? (lerpDouble(screenHeight * 0.4, screenHeight * 0.6, t) ??
+                      screenHeight * 0.4)
+                      : screenHeight * 0.5;
+
+
+
+                  final delta = (t - t.roundToDouble()).abs();        // 0 at ends, ~0.5 mid
+                  final endP = 1.0 - (delta * 2.0).clamp(0.0, 1.0);   // 0 mid, 1 at ends
+                  final delayed = ((endP - 0.35) / 0.65).clamp(0.0, 1.0);
+                  final opacity = isMobile ? Curves.easeOut.transform(delayed) : 1.0;
+
+                  return SizedBox(
+                    height: tabHeight,
+                    child: AnimatedOpacity(
+                      duration: const Duration(milliseconds: 220),
+                      curve: Curves.easeOut,
+                      opacity: opacity,
+                      child: IgnorePointer(
+                        ignoring: isMobile && opacity < 0.9,
+                        child: child,
+                      ),
                     ),
+                  );
+                },
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    _SignInTab(isMobile: isMobile),
+                    _CreateAccountTab(isMobile: isMobile),
                   ],
+                ),
+              ),
+
+              ],
                 ),
               ),
             ),
