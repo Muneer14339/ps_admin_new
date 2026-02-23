@@ -149,3 +149,7 @@ class SetScoringEvent extends TrainingEvent {
 }
 
 class SaveDrillEvent extends TrainingEvent {}
+
+class ResetLoadout extends TrainingEvent {
+  const ResetLoadout();
+}

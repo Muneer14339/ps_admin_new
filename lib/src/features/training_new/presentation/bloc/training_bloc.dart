@@ -42,10 +42,14 @@ class TrainingBloc extends Bloc<TrainingEvent, TrainingState> {
     on<SetStartSignalEvent>(_onSetStartSignal);
     on<SetScoringEvent>(_onSetScoring);
     on<SaveDrillEvent>(_onSaveDrill);
-    
+    on<ResetLoadout>(_onResetLoadout);
 
     // Initialize with default data (equivalent to original Rx lists)
     // No initial abstract event dispatched; create and dispatch a concrete Init event if needed.
+  }
+
+  void _onResetLoadout(ResetLoadout event, Emitter<TrainingState> emit) {
+    emit(state.copyWith(clearLoadout: true));
   }
 
   // 🎯 ORIGINAL: everAll([isLoadoutSelected, isWifiConnected, isBleConnected], ...)

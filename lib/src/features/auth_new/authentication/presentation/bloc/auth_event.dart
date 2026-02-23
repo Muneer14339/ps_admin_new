@@ -8,7 +8,8 @@ class AuthEvent with _$AuthEvent {
   }) = AuthEventLogin;
 
   const factory AuthEvent.signup({
-    required String username,
+    required String firstName,
+    required String lastName,
     required String email,
     required String password,
     String? location,

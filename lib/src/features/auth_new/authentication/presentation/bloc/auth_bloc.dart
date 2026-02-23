@@ -66,7 +66,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(const AuthState.loading(LoadingType.signup));
 
     final result = await _authUseCase.signup(
-      username: event.username,
+      firstName: event.firstName,
+      lastName: event.lastName,
       email: event.email,
       password: event.password,
       location: event.location,

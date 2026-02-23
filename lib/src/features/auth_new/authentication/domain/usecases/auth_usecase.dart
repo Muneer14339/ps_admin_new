@@ -23,12 +23,13 @@ class AuthUseCase {
 
   // Signup operations
   Future<Either<Failure, User>> signup({
-    required String username,
+    required String firstName,
+    required String lastName,
     required String email,
     required String password,
     String? location,
   }) async {
-    return await _repository.signup(username, email, password, location);
+    return await _repository.signup(firstName, lastName, email, password, location);
   }
 
   // Google Sign-in

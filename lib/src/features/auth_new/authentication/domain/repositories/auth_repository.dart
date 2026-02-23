@@ -6,11 +6,12 @@ import '../entities/user.dart';
 abstract class AuthRepository {
   Future<Either<AuthFailure, User>> login(String email, String password);
   Future<Either<AuthFailure, User>> signup(
-    String username,
-    String email,
-    String password,
-    String? location,
-  );
+      String firstName,
+      String lastName,
+      String email,
+      String password,
+      String? location,
+      );
   Future<Either<AuthFailure, User>> verifyEmail(String token);
   Future<Either<AuthFailure, VerifyResetTokenResponse>> verifyResetToken(
     String token,

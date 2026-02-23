@@ -6,12 +6,7 @@ import '../../../../../core/services/network_service/endpoints.dart';
 import '../models/auth_models.dart';
 
 abstract class AuthRemoteDataSource {
-  Future<SignupResponse> signup(
-    String username,
-    String email,
-    String password,
-    String? location,
-  );
+  Future<SignupResponse> signup(String firstName, String lastName, String email, String password, String? location);
   Future<VerifyEmailResponse> verifyEmail(String token);
   Future<VerifyResetTokenResponse> verifyResetToken(String token);
   Future<AuthResponse> login(String email, String password);
@@ -30,19 +25,14 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   AuthRemoteDataSourceImpl(this._dioClient);
 
-  @override
-  Future<SignupResponse> signup(
-    String username,
-    String email,
-    String password,
-    String? location,
-  ) async {
+  Future<SignupResponse> signup(String firstName, String lastName, String email, String password, String? location) async {
     try {
       final request = SignupRequest.fromEmail(
         email: email,
         password: password,
         hasDefaultCoach: true,
-        username: username.isEmpty ? null : username,
+        firstName: firstName,
+        lastName: lastName,
       );
 
       print(request.toJson());

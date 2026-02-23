@@ -21,7 +21,8 @@ mixin _$AuthEvent {
   TResult when<TResult extends Object?>({
     required TResult Function(String email, String password) login,
     required TResult Function(
-      String username,
+      String firstName,
+      String lastName,
       String email,
       String password,
       String? location,
@@ -45,7 +46,8 @@ mixin _$AuthEvent {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(String email, String password)? login,
     TResult? Function(
-      String username,
+      String firstName,
+      String lastName,
       String email,
       String password,
       String? location,
@@ -69,7 +71,8 @@ mixin _$AuthEvent {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String email, String password)? login,
     TResult Function(
-      String username,
+      String firstName,
+      String lastName,
       String email,
       String password,
       String? location,
@@ -238,7 +241,8 @@ class _$AuthEventLoginImpl implements AuthEventLogin {
   TResult when<TResult extends Object?>({
     required TResult Function(String email, String password) login,
     required TResult Function(
-      String username,
+      String firstName,
+      String lastName,
       String email,
       String password,
       String? location,
@@ -266,7 +270,8 @@ class _$AuthEventLoginImpl implements AuthEventLogin {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(String email, String password)? login,
     TResult? Function(
-      String username,
+      String firstName,
+      String lastName,
       String email,
       String password,
       String? location,
@@ -294,7 +299,8 @@ class _$AuthEventLoginImpl implements AuthEventLogin {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String email, String password)? login,
     TResult Function(
-      String username,
+      String firstName,
+      String lastName,
       String email,
       String password,
       String? location,
@@ -401,7 +407,13 @@ abstract class _$$AuthEventSignupImplCopyWith<$Res> {
     $Res Function(_$AuthEventSignupImpl) then,
   ) = __$$AuthEventSignupImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({String username, String email, String password, String? location});
+  $Res call({
+    String firstName,
+    String lastName,
+    String email,
+    String password,
+    String? location,
+  });
 }
 
 /// @nodoc
@@ -418,17 +430,23 @@ class __$$AuthEventSignupImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? username = null,
+    Object? firstName = null,
+    Object? lastName = null,
     Object? email = null,
     Object? password = null,
     Object? location = freezed,
   }) {
     return _then(
       _$AuthEventSignupImpl(
-        username:
-            null == username
-                ? _value.username
-                : username // ignore: cast_nullable_to_non_nullable
+        firstName:
+            null == firstName
+                ? _value.firstName
+                : firstName // ignore: cast_nullable_to_non_nullable
+                    as String,
+        lastName:
+            null == lastName
+                ? _value.lastName
+                : lastName // ignore: cast_nullable_to_non_nullable
                     as String,
         email:
             null == email
@@ -454,14 +472,17 @@ class __$$AuthEventSignupImplCopyWithImpl<$Res>
 
 class _$AuthEventSignupImpl implements AuthEventSignup {
   const _$AuthEventSignupImpl({
-    required this.username,
+    required this.firstName,
+    required this.lastName,
     required this.email,
     required this.password,
     this.location,
   });
 
   @override
-  final String username;
+  final String firstName;
+  @override
+  final String lastName;
   @override
   final String email;
   @override
@@ -471,7 +492,7 @@ class _$AuthEventSignupImpl implements AuthEventSignup {
 
   @override
   String toString() {
-    return 'AuthEvent.signup(username: $username, email: $email, password: $password, location: $location)';
+    return 'AuthEvent.signup(firstName: $firstName, lastName: $lastName, email: $email, password: $password, location: $location)';
   }
 
   @override
@@ -479,8 +500,10 @@ class _$AuthEventSignupImpl implements AuthEventSignup {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$AuthEventSignupImpl &&
-            (identical(other.username, username) ||
-                other.username == username) &&
+            (identical(other.firstName, firstName) ||
+                other.firstName == firstName) &&
+            (identical(other.lastName, lastName) ||
+                other.lastName == lastName) &&
             (identical(other.email, email) || other.email == email) &&
             (identical(other.password, password) ||
                 other.password == password) &&
@@ -490,7 +513,7 @@ class _$AuthEventSignupImpl implements AuthEventSignup {
 
   @override
   int get hashCode =>
-      Object.hash(runtimeType, username, email, password, location);
+      Object.hash(runtimeType, firstName, lastName, email, password, location);
 
   /// Create a copy of AuthEvent
   /// with the given fields replaced by the non-null parameter values.
@@ -508,7 +531,8 @@ class _$AuthEventSignupImpl implements AuthEventSignup {
   TResult when<TResult extends Object?>({
     required TResult Function(String email, String password) login,
     required TResult Function(
-      String username,
+      String firstName,
+      String lastName,
       String email,
       String password,
       String? location,
@@ -528,7 +552,7 @@ class _$AuthEventSignupImpl implements AuthEventSignup {
     required TResult Function() logout,
     required TResult Function() checkLoginStatus,
   }) {
-    return signup(username, email, password, location);
+    return signup(firstName, lastName, email, password, location);
   }
 
   @override
@@ -536,7 +560,8 @@ class _$AuthEventSignupImpl implements AuthEventSignup {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(String email, String password)? login,
     TResult? Function(
-      String username,
+      String firstName,
+      String lastName,
       String email,
       String password,
       String? location,
@@ -556,7 +581,7 @@ class _$AuthEventSignupImpl implements AuthEventSignup {
     TResult? Function()? logout,
     TResult? Function()? checkLoginStatus,
   }) {
-    return signup?.call(username, email, password, location);
+    return signup?.call(firstName, lastName, email, password, location);
   }
 
   @override
@@ -564,7 +589,8 @@ class _$AuthEventSignupImpl implements AuthEventSignup {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String email, String password)? login,
     TResult Function(
-      String username,
+      String firstName,
+      String lastName,
       String email,
       String password,
       String? location,
@@ -586,7 +612,7 @@ class _$AuthEventSignupImpl implements AuthEventSignup {
     required TResult orElse(),
   }) {
     if (signup != null) {
-      return signup(username, email, password, location);
+      return signup(firstName, lastName, email, password, location);
     }
     return orElse();
   }
@@ -650,13 +676,15 @@ class _$AuthEventSignupImpl implements AuthEventSignup {
 
 abstract class AuthEventSignup implements AuthEvent {
   const factory AuthEventSignup({
-    required final String username,
+    required final String firstName,
+    required final String lastName,
     required final String email,
     required final String password,
     final String? location,
   }) = _$AuthEventSignupImpl;
 
-  String get username;
+  String get firstName;
+  String get lastName;
   String get email;
   String get password;
   String? get location;
@@ -714,7 +742,8 @@ class _$AuthEventGoogleSignInImpl implements AuthEventGoogleSignIn {
   TResult when<TResult extends Object?>({
     required TResult Function(String email, String password) login,
     required TResult Function(
-      String username,
+      String firstName,
+      String lastName,
       String email,
       String password,
       String? location,
@@ -742,7 +771,8 @@ class _$AuthEventGoogleSignInImpl implements AuthEventGoogleSignIn {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(String email, String password)? login,
     TResult? Function(
-      String username,
+      String firstName,
+      String lastName,
       String email,
       String password,
       String? location,
@@ -770,7 +800,8 @@ class _$AuthEventGoogleSignInImpl implements AuthEventGoogleSignIn {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String email, String password)? login,
     TResult Function(
-      String username,
+      String firstName,
+      String lastName,
       String email,
       String password,
       String? location,
@@ -935,7 +966,8 @@ class _$AuthEventVerifyEmailImpl implements AuthEventVerifyEmail {
   TResult when<TResult extends Object?>({
     required TResult Function(String email, String password) login,
     required TResult Function(
-      String username,
+      String firstName,
+      String lastName,
       String email,
       String password,
       String? location,
@@ -963,7 +995,8 @@ class _$AuthEventVerifyEmailImpl implements AuthEventVerifyEmail {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(String email, String password)? login,
     TResult? Function(
-      String username,
+      String firstName,
+      String lastName,
       String email,
       String password,
       String? location,
@@ -991,7 +1024,8 @@ class _$AuthEventVerifyEmailImpl implements AuthEventVerifyEmail {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String email, String password)? login,
     TResult Function(
-      String username,
+      String firstName,
+      String lastName,
       String email,
       String password,
       String? location,
@@ -1164,7 +1198,8 @@ class _$AuthEventResendOtpImpl implements AuthEventResendOtp {
   TResult when<TResult extends Object?>({
     required TResult Function(String email, String password) login,
     required TResult Function(
-      String username,
+      String firstName,
+      String lastName,
       String email,
       String password,
       String? location,
@@ -1192,7 +1227,8 @@ class _$AuthEventResendOtpImpl implements AuthEventResendOtp {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(String email, String password)? login,
     TResult? Function(
-      String username,
+      String firstName,
+      String lastName,
       String email,
       String password,
       String? location,
@@ -1220,7 +1256,8 @@ class _$AuthEventResendOtpImpl implements AuthEventResendOtp {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String email, String password)? login,
     TResult Function(
-      String username,
+      String firstName,
+      String lastName,
       String email,
       String password,
       String? location,
@@ -1392,7 +1429,8 @@ class _$AuthEventSendPasswordResetImpl implements AuthEventSendPasswordReset {
   TResult when<TResult extends Object?>({
     required TResult Function(String email, String password) login,
     required TResult Function(
-      String username,
+      String firstName,
+      String lastName,
       String email,
       String password,
       String? location,
@@ -1420,7 +1458,8 @@ class _$AuthEventSendPasswordResetImpl implements AuthEventSendPasswordReset {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(String email, String password)? login,
     TResult? Function(
-      String username,
+      String firstName,
+      String lastName,
       String email,
       String password,
       String? location,
@@ -1448,7 +1487,8 @@ class _$AuthEventSendPasswordResetImpl implements AuthEventSendPasswordReset {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String email, String password)? login,
     TResult Function(
-      String username,
+      String firstName,
+      String lastName,
       String email,
       String password,
       String? location,
@@ -1620,7 +1660,8 @@ class _$AuthEventVerifyResetTokenImpl implements AuthEventVerifyResetToken {
   TResult when<TResult extends Object?>({
     required TResult Function(String email, String password) login,
     required TResult Function(
-      String username,
+      String firstName,
+      String lastName,
       String email,
       String password,
       String? location,
@@ -1648,7 +1689,8 @@ class _$AuthEventVerifyResetTokenImpl implements AuthEventVerifyResetToken {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(String email, String password)? login,
     TResult? Function(
-      String username,
+      String firstName,
+      String lastName,
       String email,
       String password,
       String? location,
@@ -1676,7 +1718,8 @@ class _$AuthEventVerifyResetTokenImpl implements AuthEventVerifyResetToken {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String email, String password)? login,
     TResult Function(
-      String username,
+      String firstName,
+      String lastName,
       String email,
       String password,
       String? location,
@@ -1877,7 +1920,8 @@ class _$AuthEventResetPasswordImpl implements AuthEventResetPassword {
   TResult when<TResult extends Object?>({
     required TResult Function(String email, String password) login,
     required TResult Function(
-      String username,
+      String firstName,
+      String lastName,
       String email,
       String password,
       String? location,
@@ -1905,7 +1949,8 @@ class _$AuthEventResetPasswordImpl implements AuthEventResetPassword {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(String email, String password)? login,
     TResult? Function(
-      String username,
+      String firstName,
+      String lastName,
       String email,
       String password,
       String? location,
@@ -1933,7 +1978,8 @@ class _$AuthEventResetPasswordImpl implements AuthEventResetPassword {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String email, String password)? login,
     TResult Function(
-      String username,
+      String firstName,
+      String lastName,
       String email,
       String password,
       String? location,
@@ -2080,7 +2126,8 @@ class _$AuthEventLogoutImpl implements AuthEventLogout {
   TResult when<TResult extends Object?>({
     required TResult Function(String email, String password) login,
     required TResult Function(
-      String username,
+      String firstName,
+      String lastName,
       String email,
       String password,
       String? location,
@@ -2108,7 +2155,8 @@ class _$AuthEventLogoutImpl implements AuthEventLogout {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(String email, String password)? login,
     TResult? Function(
-      String username,
+      String firstName,
+      String lastName,
       String email,
       String password,
       String? location,
@@ -2136,7 +2184,8 @@ class _$AuthEventLogoutImpl implements AuthEventLogout {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String email, String password)? login,
     TResult Function(
-      String username,
+      String firstName,
+      String lastName,
       String email,
       String password,
       String? location,
@@ -2270,7 +2319,8 @@ class _$AuthEventCheckLoginStatusImpl implements AuthEventCheckLoginStatus {
   TResult when<TResult extends Object?>({
     required TResult Function(String email, String password) login,
     required TResult Function(
-      String username,
+      String firstName,
+      String lastName,
       String email,
       String password,
       String? location,
@@ -2298,7 +2348,8 @@ class _$AuthEventCheckLoginStatusImpl implements AuthEventCheckLoginStatus {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(String email, String password)? login,
     TResult? Function(
-      String username,
+      String firstName,
+      String lastName,
       String email,
       String password,
       String? location,
@@ -2326,7 +2377,8 @@ class _$AuthEventCheckLoginStatusImpl implements AuthEventCheckLoginStatus {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String email, String password)? login,
     TResult Function(
-      String username,
+      String firstName,
+      String lastName,
       String email,
       String password,
       String? location,

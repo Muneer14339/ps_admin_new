@@ -35,7 +35,8 @@ Map<String, dynamic> _$$UserModelImplToJson(_$UserModelImpl instance) =>
 _$SignupRequestImpl _$$SignupRequestImplFromJson(Map<String, dynamic> json) =>
     _$SignupRequestImpl(
       email: json['email'] as String,
-      username: json['username'] as String?,
+      firstName: json['first_name'] as String,
+      lastName: json['last_name'] as String,
       password: json['password'] as String,
       hasDefaultCoach: json['has_default_coach'] as bool? ?? true,
     );
@@ -43,7 +44,8 @@ _$SignupRequestImpl _$$SignupRequestImplFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$$SignupRequestImplToJson(_$SignupRequestImpl instance) =>
     <String, dynamic>{
       'email': instance.email,
-      'username': instance.username,
+      'first_name': instance.firstName,
+      'last_name': instance.lastName,
       'password': instance.password,
       'has_default_coach': instance.hasDefaultCoach,
     };

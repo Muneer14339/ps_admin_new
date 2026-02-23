@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pa_sreens/src/core/theme/color/app_colors_new.dart';
 import '../../../../../core/theme/theme_data/theme_data.dart';
 import '../../../../../core/widgets/toast.dart';
+import '../../navigation/auth_route.dart';
 import '../bloc/auth_bloc.dart';
 import '../widgets/header_with_back_button.dart';
 import 'email_verification_page.dart';
@@ -74,8 +75,7 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
             );
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(
-                builder: (_) => EmailVerificationPage(
+              AuthRoute(builder: (_) => EmailVerificationPage(
                   isFromForgotPassword: true,
                   email: _emailController.text.trim(),
                 ),

@@ -8,6 +8,7 @@ import 'package:pa_sreens/src/core/app%20config/device_config.dart';
 import 'package:pa_sreens/src/core/widgets/toast.dart';
 import 'package:pa_sreens/src/features/auth_new/authentication/presentation/widgets/common_signin_form.dart';
 import 'package:pa_sreens/src/features/auth_new/authentication/presentation/widgets/common_signup_form.dart';
+import '../../navigation/auth_route.dart';
 import '../../../../../core/theme/theme_data/theme_data.dart';
 import '../bloc/auth_bloc.dart';
 import '../widgets/header_with_back_button.dart';
@@ -109,10 +110,21 @@ class _PulseIdAuthPageState extends State<PulseIdAuthPage> with SingleTickerProv
                               ),
                             ),
                             const SizedBox(width: AppTheme.spacingSmall),
-                            Text('Signing in to ', style: AppTheme.bodySmall(context)),
-                            Text(
-                              'PulseAim',
-                              style: AppTheme.bodySmall(context).copyWith(fontWeight: FontWeight.w600),
+                            AnimatedBuilder(
+                              animation: _tabController,
+                              builder: (_, __) => Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    _tabController.index == 0 ? 'Signing in to ' : 'Signing up to ',
+                                    style: AppTheme.bodySmall(context),
+                                  ),
+                                  Text(
+                                    'PulseAim',
+                                    style: AppTheme.bodySmall(context).copyWith(fontWeight: FontWeight.w600),
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
@@ -144,7 +156,7 @@ class _PulseIdAuthPageState extends State<PulseIdAuthPage> with SingleTickerProv
                   final t = _tabController.animation!.value.clamp(0.0, 1.0);
 
                   final tabHeight = isMobile
-                      ? (lerpDouble(screenHeight * 0.4, screenHeight * 0.6, t) ??
+                      ? (lerpDouble(screenHeight * 0.4, screenHeight * 0.65, t) ??
                       screenHeight * 0.4)
                       : screenHeight * 0.5;
 
@@ -252,7 +264,7 @@ class _SignInTabState extends State<_SignInTab> {
           passwordController: _passwordController,
           onForgotPassword: () => Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => const ForgotPasswordPage()),
+              AuthRoute(builder: (_) => const ForgotPasswordPage())
           ),
           onSubmit: () {
             if (!_formKey.currentState!.validate()) return;
@@ -280,14 +292,16 @@ class _CreateAccountTab extends StatefulWidget {
 
 class _CreateAccountTabState extends State<_CreateAccountTab> {
   final _formKey = GlobalKey<FormState>();
-  final _usernameController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
   @override
   void dispose() {
-    _usernameController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
@@ -344,7 +358,8 @@ class _CreateAccountTabState extends State<_CreateAccountTab> {
         child: CommonSignUpForm(
           formKey: _formKey,
           emailController: _emailController,
-          usernameController: _usernameController,
+          firstNameController: _firstNameController,
+          lastNameController: _lastNameController,
           passwordController: _passwordController,
           confirmPasswordController: _confirmPasswordController,
           useRowLayout: !widget.isMobile,
@@ -352,7 +367,8 @@ class _CreateAccountTabState extends State<_CreateAccountTab> {
             if (!_formKey.currentState!.validate()) return;
             context.read<AuthBloc>().add(
               AuthEvent.signup(
-                username: _usernameController.text.trim(),
+                firstName: _firstNameController.text.trim(),
+                lastName: _lastNameController.text.trim(),
                 email: _emailController.text.trim(),
                 password: _passwordController.text,
               ),

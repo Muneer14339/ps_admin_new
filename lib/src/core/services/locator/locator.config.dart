@@ -151,30 +151,30 @@ extension GetItInjectableX on _i174.GetIt {
   }) {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     gh.factory<_i107.StagesDBService>(() => _i107.StagesDBService());
-    gh.factory<_i530.SessionHistoryBloc>(() => _i530.SessionHistoryBloc());
     gh.factory<_i265.TabBloc>(() => _i265.TabBloc());
     gh.factory<_i332.ProfileService>(() => _i332.ProfileService());
-    gh.factory<_i154.CameraWifiBloc>(() => _i154.CameraWifiBloc());
-    gh.factory<_i541.ListningTimerBloc>(() => _i541.ListningTimerBloc());
+    gh.factory<_i530.SessionHistoryBloc>(() => _i530.SessionHistoryBloc());
     gh.factory<_i695.AppBleDeviceBloc>(() => _i695.AppBleDeviceBloc());
+    gh.factory<_i541.ListningTimerBloc>(() => _i541.ListningTimerBloc());
+    gh.factory<_i154.CameraWifiBloc>(() => _i154.CameraWifiBloc());
+    gh.factory<_i388.SessionDbHelper>(() => _i388.SessionDbHelper());
+    gh.factory<_i240.RtspStreamingBloc>(() => _i240.RtspStreamingBloc());
+    gh.factory<_i994.SessionBloc>(() => _i994.SessionBloc());
+    gh.factory<_i525.ShoQdataBloc>(() => _i525.ShoQdataBloc());
+    gh.factory<_i802.StageDbHelper>(() => _i802.StageDbHelper());
+    gh.factory<_i47.DistanceDbHelper>(() => _i47.DistanceDbHelper());
     gh.factory<_i40.DrillDbHelper>(() => _i40.DrillDbHelper());
+    gh.factory<_i292.FirearmDbHelper>(() => _i292.FirearmDbHelper());
+    gh.factory<_i146.ModeDbHelper>(() => _i146.ModeDbHelper());
     gh.factory<_i688.SingleLineStagesHelper>(
       () => _i688.SingleLineStagesHelper(),
     );
-    gh.factory<_i146.ModeDbHelper>(() => _i146.ModeDbHelper());
-    gh.factory<_i47.DistanceDbHelper>(() => _i47.DistanceDbHelper());
-    gh.factory<_i292.FirearmDbHelper>(() => _i292.FirearmDbHelper());
-    gh.factory<_i802.StageDbHelper>(() => _i802.StageDbHelper());
     gh.factory<_i398.StageBloc>(() => _i398.StageBloc());
-    gh.factory<_i388.SessionDbHelper>(() => _i388.SessionDbHelper());
-    gh.factory<_i994.SessionBloc>(() => _i994.SessionBloc());
-    gh.factory<_i240.RtspStreamingBloc>(() => _i240.RtspStreamingBloc());
-    gh.factory<_i525.ShoQdataBloc>(() => _i525.ShoQdataBloc());
     gh.factory<_i71.TrainingBloc>(() => _i71.TrainingBloc());
-    gh.singleton<_i571.AppKeys>(() => _i571.AppKeys());
     gh.singleton<_i887.DioClient>(() => _i887.DioClient());
-    gh.singleton<_i267.DatabaseHelper>(() => _i267.DatabaseHelper());
     gh.singleton<_i168.ConnectivityService>(() => _i168.ConnectivityService());
+    gh.singleton<_i267.DatabaseHelper>(() => _i267.DatabaseHelper());
+    gh.singleton<_i571.AppKeys>(() => _i571.AppKeys());
     gh.lazySingleton<_i1048.RoutesService>(() => _i1048.RoutesService());
     gh.factory<_i483.FirearmSource>(() => _i59.FirearmSourceImpl());
     gh.factory<_i424.StageSource>(() => _i939.DistanceSourceImpl());
@@ -225,11 +225,11 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i509.Stagecase>(
       () => _i509.Stagecase(gh<_i151.StageRepository>()),
     );
-    gh.factory<_i804.ModeUsecase>(
-      () => _i804.ModeUsecase(gh<_i763.ModeRepository>()),
-    );
     gh.factory<_i870.ModeUsecase>(
       () => _i870.ModeUsecase(gh<_i763.ModeRepository>()),
+    );
+    gh.factory<_i804.ModeUsecase>(
+      () => _i804.ModeUsecase(gh<_i763.ModeRepository>()),
     );
     gh.factory<_i257.AuthRepository>(
       () => _i777.AuthRepositoryImpl(gh<_i902.AuthRemoteDataSource>()),

@@ -7,7 +7,8 @@ import 'package:pa_sreens/src/features/auth_new/authentication/presentation/widg
 class CommonSignUpForm extends StatefulWidget {
   final GlobalKey<FormState> formKey;
   final TextEditingController emailController;
-  final TextEditingController usernameController;
+  final TextEditingController firstNameController;
+  final TextEditingController lastNameController;
   final TextEditingController passwordController;
   final TextEditingController confirmPasswordController;
   final VoidCallback onSubmit;
@@ -17,7 +18,8 @@ class CommonSignUpForm extends StatefulWidget {
     super.key,
     required this.formKey,
     required this.emailController,
-    required this.usernameController,
+    required this.firstNameController,
+    required this.lastNameController,
     required this.passwordController,
     required this.confirmPasswordController,
     required this.onSubmit,
@@ -56,9 +58,19 @@ class _CommonSignUpFormState extends State<CommonSignUpForm> {
                 const SizedBox(width: AppTheme.spacingLarge),
                 Expanded(
                   child: CommonAuthInputField(
-                    label: 'Username (Optional)',
-                    hint: 'Enter your username',
-                    controller: widget.usernameController,
+                    label: 'First Name',
+                    hint: 'Enter your first name',
+                    controller: widget.firstNameController,
+                    validator: (value) => value?.trim().isEmpty ?? true ? 'First name is required' : null,
+                  ),
+                ),
+                const SizedBox(height: AppTheme.spacingLarge),
+                Expanded(
+                  child: CommonAuthInputField(
+                    label: 'Last Name',
+                    hint: 'Enter your last name',
+                    controller: widget.lastNameController,
+                    validator: (value) => value?.trim().isEmpty ?? true ? 'Last name is required' : null,
                   ),
                 ),
               ],
@@ -125,9 +137,17 @@ class _CommonSignUpFormState extends State<CommonSignUpForm> {
             ),
             const SizedBox(height: AppTheme.spacingLarge),
             CommonAuthInputField(
-              label: 'Username (Optional)',
-              hint: 'Enter your username',
-              controller: widget.usernameController,
+              label: 'First Name',
+              hint: 'Enter your first name',
+              controller: widget.firstNameController,
+              validator: (value) => value?.trim().isEmpty ?? true ? 'First name is required' : null,
+            ),
+            const SizedBox(height: AppTheme.spacingLarge),
+            CommonAuthInputField(
+              label: 'Last Name',
+              hint: 'Enter your last name',
+              controller: widget.lastNameController,
+              validator: (value) => value?.trim().isEmpty ?? true ? 'Last name is required' : null,
             ),
             const SizedBox(height: AppTheme.spacingLarge),
             CommonAuthInputField(

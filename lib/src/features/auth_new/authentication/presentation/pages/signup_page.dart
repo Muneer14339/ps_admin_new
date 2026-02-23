@@ -3,6 +3,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../core/app%20config/device_config.dart';
+import '../../navigation/auth_route.dart';
 import '../../../../../core/theme/theme_data/theme_data.dart';
 import '../../../../../core/widgets/toast.dart';
 import '../widgets/common_signup_form.dart';
@@ -30,14 +31,16 @@ class SignupForm extends StatefulWidget {
 
 class _SignupFormState extends State<SignupForm> {
   final _formKey = GlobalKey<FormState>();
-  final _usernameController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
   @override
   void dispose() {
-    _usernameController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
@@ -80,8 +83,7 @@ class _SignupFormState extends State<SignupForm> {
             );
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(
-                builder: (context) => EmailVerificationPage(
+              AuthRoute(builder: (_) => EmailVerificationPage(
                   email: _emailController.text.trim(),
                 ),
               ),
@@ -151,7 +153,8 @@ class _SignupFormState extends State<SignupForm> {
       child: CommonSignUpForm(
         formKey: _formKey,
         emailController: _emailController,
-        usernameController: _usernameController,
+        firstNameController: _firstNameController,
+        lastNameController: _lastNameController,
         passwordController: _passwordController,
         confirmPasswordController: _confirmPasswordController,
         onSubmit: _handleSignup,
@@ -188,7 +191,8 @@ class _SignupFormState extends State<SignupForm> {
     if (!_formKey.currentState!.validate()) return;
     context.read<AuthBloc>().add(
       AuthEvent.signup(
-        username: _usernameController.text.trim(),
+        firstName: _firstNameController.text.trim(),
+        lastName: _lastNameController.text.trim(),
         email: _emailController.text.trim(),
         password: _passwordController.text,
       ),

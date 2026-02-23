@@ -317,7 +317,10 @@ SignupRequest _$SignupRequestFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$SignupRequest {
   String get email => throw _privateConstructorUsedError;
-  String? get username => throw _privateConstructorUsedError;
+  @JsonKey(name: 'first_name')
+  String get firstName => throw _privateConstructorUsedError;
+  @JsonKey(name: 'last_name')
+  String get lastName => throw _privateConstructorUsedError;
   String get password => throw _privateConstructorUsedError;
   @JsonKey(name: 'has_default_coach')
   bool get hasDefaultCoach => throw _privateConstructorUsedError;
@@ -341,7 +344,8 @@ abstract class $SignupRequestCopyWith<$Res> {
   @useResult
   $Res call({
     String email,
-    String? username,
+    @JsonKey(name: 'first_name') String firstName,
+    @JsonKey(name: 'last_name') String lastName,
     String password,
     @JsonKey(name: 'has_default_coach') bool hasDefaultCoach,
   });
@@ -363,7 +367,8 @@ class _$SignupRequestCopyWithImpl<$Res, $Val extends SignupRequest>
   @override
   $Res call({
     Object? email = null,
-    Object? username = freezed,
+    Object? firstName = null,
+    Object? lastName = null,
     Object? password = null,
     Object? hasDefaultCoach = null,
   }) {
@@ -374,11 +379,16 @@ class _$SignupRequestCopyWithImpl<$Res, $Val extends SignupRequest>
                     ? _value.email
                     : email // ignore: cast_nullable_to_non_nullable
                         as String,
-            username:
-                freezed == username
-                    ? _value.username
-                    : username // ignore: cast_nullable_to_non_nullable
-                        as String?,
+            firstName:
+                null == firstName
+                    ? _value.firstName
+                    : firstName // ignore: cast_nullable_to_non_nullable
+                        as String,
+            lastName:
+                null == lastName
+                    ? _value.lastName
+                    : lastName // ignore: cast_nullable_to_non_nullable
+                        as String,
             password:
                 null == password
                     ? _value.password
@@ -406,7 +416,8 @@ abstract class _$$SignupRequestImplCopyWith<$Res>
   @useResult
   $Res call({
     String email,
-    String? username,
+    @JsonKey(name: 'first_name') String firstName,
+    @JsonKey(name: 'last_name') String lastName,
     String password,
     @JsonKey(name: 'has_default_coach') bool hasDefaultCoach,
   });
@@ -427,7 +438,8 @@ class __$$SignupRequestImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? email = null,
-    Object? username = freezed,
+    Object? firstName = null,
+    Object? lastName = null,
     Object? password = null,
     Object? hasDefaultCoach = null,
   }) {
@@ -438,11 +450,16 @@ class __$$SignupRequestImplCopyWithImpl<$Res>
                 ? _value.email
                 : email // ignore: cast_nullable_to_non_nullable
                     as String,
-        username:
-            freezed == username
-                ? _value.username
-                : username // ignore: cast_nullable_to_non_nullable
-                    as String?,
+        firstName:
+            null == firstName
+                ? _value.firstName
+                : firstName // ignore: cast_nullable_to_non_nullable
+                    as String,
+        lastName:
+            null == lastName
+                ? _value.lastName
+                : lastName // ignore: cast_nullable_to_non_nullable
+                    as String,
         password:
             null == password
                 ? _value.password
@@ -463,7 +480,8 @@ class __$$SignupRequestImplCopyWithImpl<$Res>
 class _$SignupRequestImpl extends _SignupRequest {
   const _$SignupRequestImpl({
     required this.email,
-    this.username,
+    @JsonKey(name: 'first_name') required this.firstName,
+    @JsonKey(name: 'last_name') required this.lastName,
     required this.password,
     @JsonKey(name: 'has_default_coach') this.hasDefaultCoach = true,
   }) : super._();
@@ -474,7 +492,11 @@ class _$SignupRequestImpl extends _SignupRequest {
   @override
   final String email;
   @override
-  final String? username;
+  @JsonKey(name: 'first_name')
+  final String firstName;
+  @override
+  @JsonKey(name: 'last_name')
+  final String lastName;
   @override
   final String password;
   @override
@@ -483,7 +505,7 @@ class _$SignupRequestImpl extends _SignupRequest {
 
   @override
   String toString() {
-    return 'SignupRequest(email: $email, username: $username, password: $password, hasDefaultCoach: $hasDefaultCoach)';
+    return 'SignupRequest(email: $email, firstName: $firstName, lastName: $lastName, password: $password, hasDefaultCoach: $hasDefaultCoach)';
   }
 
   @override
@@ -492,8 +514,10 @@ class _$SignupRequestImpl extends _SignupRequest {
         (other.runtimeType == runtimeType &&
             other is _$SignupRequestImpl &&
             (identical(other.email, email) || other.email == email) &&
-            (identical(other.username, username) ||
-                other.username == username) &&
+            (identical(other.firstName, firstName) ||
+                other.firstName == firstName) &&
+            (identical(other.lastName, lastName) ||
+                other.lastName == lastName) &&
             (identical(other.password, password) ||
                 other.password == password) &&
             (identical(other.hasDefaultCoach, hasDefaultCoach) ||
@@ -502,8 +526,14 @@ class _$SignupRequestImpl extends _SignupRequest {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, email, username, password, hasDefaultCoach);
+  int get hashCode => Object.hash(
+    runtimeType,
+    email,
+    firstName,
+    lastName,
+    password,
+    hasDefaultCoach,
+  );
 
   /// Create a copy of SignupRequest
   /// with the given fields replaced by the non-null parameter values.
@@ -522,7 +552,8 @@ class _$SignupRequestImpl extends _SignupRequest {
 abstract class _SignupRequest extends SignupRequest {
   const factory _SignupRequest({
     required final String email,
-    final String? username,
+    @JsonKey(name: 'first_name') required final String firstName,
+    @JsonKey(name: 'last_name') required final String lastName,
     required final String password,
     @JsonKey(name: 'has_default_coach') final bool hasDefaultCoach,
   }) = _$SignupRequestImpl;
@@ -534,7 +565,11 @@ abstract class _SignupRequest extends SignupRequest {
   @override
   String get email;
   @override
-  String? get username;
+  @JsonKey(name: 'first_name')
+  String get firstName;
+  @override
+  @JsonKey(name: 'last_name')
+  String get lastName;
   @override
   String get password;
   @override

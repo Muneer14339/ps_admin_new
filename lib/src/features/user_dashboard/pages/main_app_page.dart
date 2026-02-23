@@ -18,6 +18,8 @@ import '../../train/connectivity/presentation/bloc/bluetooth_bloc/app_ble_device
 import '../../train/connectivity/presentation/bloc/wifi_bloc/camera_wifi_bloc.dart';
 import '../../train/connectivity/presentation/view/bluetooth_view.dart';
 import '../../train/connectivity/presentation/view/wifi_list_view.dart';
+import '../../training_new/presentation/bloc/training_bloc.dart';
+import '../../training_new/presentation/bloc/training_event.dart';
 import '../../training_new/presentation/widgets/view/training_layout_view.dart';
 import '../../training_new/presentation/widgets/view/training_layout_wrapper.dart';
 import '../presentation/widgets/tab_widgets/enhanced_armory_tab_view.dart';
@@ -199,6 +201,7 @@ class _MainAppViewState extends State<MainAppView> {
       case 1:
         return const EnhancedArmoryTabView();
       case 2:
+        context.read<TrainingBloc>().add(const ResetLoadout());
         return const TrainingLayoutWrapper();
       case 3:
         return const HistoryTabWidget();

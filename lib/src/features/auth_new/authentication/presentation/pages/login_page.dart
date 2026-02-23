@@ -3,6 +3,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../core/app%20config/device_config.dart';
+import '../../navigation/auth_route.dart';
 import '../../../../../core/services/local_storage_service/local_storage_service.dart';
 import '../../../../../core/services/locator/locator.dart';
 import '../../../../../core/theme/theme_data/theme_data.dart';
@@ -152,7 +153,7 @@ class _LoginFormState extends State<LoginForm> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => const PulseIdAuthPage()),
+              AuthRoute(builder: (_) => const PulseIdAuthPage())
           );
         },
       ),
@@ -185,7 +186,7 @@ class _LoginFormState extends State<LoginForm> {
         onForgotPassword: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => const ForgotPasswordPage()),
+              AuthRoute(builder: (_) => const ForgotPasswordPage())
           );
         },
         onSubmit: _handleLogin,
@@ -207,7 +208,7 @@ class _LoginFormState extends State<LoginForm> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const SignupPage()),
+                  AuthRoute(builder: (_) => const SignupPage())
               );
             },
             style: TextButton.styleFrom(

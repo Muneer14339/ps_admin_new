@@ -28,24 +28,25 @@ class SignupRequest with _$SignupRequest {
 
   const factory SignupRequest({
     required String email,
-    String? username,
+    @JsonKey(name: 'first_name') required String firstName,
+    @JsonKey(name: 'last_name') required String lastName,
     required String password,
     @JsonKey(name: 'has_default_coach') @Default(true) bool hasDefaultCoach,
   }) = _SignupRequest;
 
   factory SignupRequest.fromJson(Map<String, dynamic> json) => _$SignupRequestFromJson(json);
 
-  // Helper constructor that extracts username from email
   factory SignupRequest.fromEmail({
     required String email,
     required String password,
+    required String firstName,
+    required String lastName,
     bool hasDefaultCoach = true,
-    String? username,
   }) {
-    final usernameRequired = email.split('@').first;
     return SignupRequest(
       email: email,
-      username: username ?? usernameRequired,
+      firstName: firstName,
+      lastName: lastName,
       password: password,
       hasDefaultCoach: hasDefaultCoach,
     );

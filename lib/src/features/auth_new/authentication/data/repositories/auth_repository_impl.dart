@@ -156,38 +156,26 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<AuthFailure, User>> signup(
-    String username,
-    String email,
-    String password,
-    String? location,
-  ) async {
+      String firstName,
+      String lastName,
+      String email,
+      String password,
+      String? location,
+      ) async {
     try {
-      final signupResponse = await remoteDataSource.signup(
-        username,
-        email,
-        password,
-        location,
-      );
-      print("Signup==2: ${signupResponse.toJson()}");
-
-      // Since signup doesn't return tokens (requires email verification),
-      // we'll create a basic user object with the signup info
+      final signupResponse = await remoteDataSource.signup(firstName, lastName, email, password, location);
       final user = User(
         uid: signupResponse.userId,
         email: signupResponse.email,
-        firstName: username, // Use the firstName parameter
+        firstName: firstName,
         location: location,
-        role: 0, // Default role - adjust as needed
         createdAt: DateTime.now(),
         registeredFrom: 'pa_app',
-        currentlyLogin: 'pa_app', // Not logged in yet
+        currentlyLogin: 'pa_app',
       );
-
       return Right(user);
     } on Exception catch (e) {
-      // Extract message from Exception
-      final message = e.toString().replaceFirst('Exception: ', '');
-      return Left(AuthFailure(message));
+      return Left(AuthFailure(e.toString().replaceFirst('Exception: ', '')));
     } catch (e) {
       return Left(AuthFailure('An unexpected error occurred'));
     }
